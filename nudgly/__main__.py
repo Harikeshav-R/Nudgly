@@ -15,7 +15,7 @@ if __name__ == "__main__":
     todo_vm = TodoViewModel()
     engine.rootContext().setContextProperty("TodoVM", todo_vm)
 
-    engine.load("nudgly/view/main.qml")
+    engine.load("view/main.qml")
 
     if not engine.rootObjects():
         sys.exit(-1)
