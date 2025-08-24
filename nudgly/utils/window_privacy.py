@@ -22,49 +22,49 @@ class WindowPrivacyService:
     WDA_EXCLUDEFROMCAPTURE = 0x11
 
     @classmethod
-    def enable_privacy_mode(cls, window: QQuickWindow):
+    def enablePrivacyMode(cls, window: QQuickWindow):
         if platform.system() == "Darwin":
-            cls._mac_enable_privacy_mode(window)
+            cls._macEnablePrivacyMode(window)
         elif platform.system() == "Windows":
-            cls._win_enable_privacy_mode(window)
+            cls._winEnablePrivacyMode(window)
 
     @classmethod
-    def disable_privacy_mode(cls, window: QQuickWindow):
+    def disablePrivacyMode(cls, window: QQuickWindow):
         if platform.system() == "Darwin":
-            cls._mac_disable_privacy_mode(window)
+            cls._macDisablePrivacyMode(window)
         elif platform.system() == "Windows":
-            cls._win_disable_privacy_mode(window)
+            cls._winDisablePrivacyMode(window)
 
     @classmethod
-    def _mac_enable_privacy_mode(cls, window: QQuickWindow):
-        ns_window = cls._get_ns_window(window)
+    def _macEnablePrivacyMode(cls, window: QQuickWindow):
+        ns_window = cls._getNsWindow(window)
         if ns_window is not None:
             ns_window.setSharingType_(cls.NSWindowSharingNone)
 
     @classmethod
-    def _mac_disable_privacy_mode(cls, window: QQuickWindow):
-        ns_window = cls._get_ns_window(window)
+    def _macDisablePrivacyMode(cls, window: QQuickWindow):
+        ns_window = cls._getNsWindow(window)
         if ns_window is not None:
             ns_window.setSharingType_(cls.NSWindowSharingReadOnly)
 
     @classmethod
-    def _win_enable_privacy_mode(cls, window: QQuickWindow):
-        hwnd = cls._get_hwnd_win(window)
+    def _winEnablePrivacyMode(cls, window: QQuickWindow):
+        hwnd = cls._getHwndWin(window)
         if hwnd:
             # Choose the stronger exclusion if available; otherwise fall back to MONITOR.
             try:
-                cls._set_display_affinity(hwnd, cls.WDA_EXCLUDEFROMCAPTURE)
+                cls._setDisplayAffinity(hwnd, cls.WDA_EXCLUDEFROMCAPTURE)
             except Exception:
-                cls._set_display_affinity(hwnd, cls.WDA_MONITOR)
+                cls._setDisplayAffinity(hwnd, cls.WDA_MONITOR)
 
     @classmethod
-    def _win_disable_privacy_mode(cls, window: QQuickWindow):
-        hwnd = cls._get_hwnd_win(window)
+    def _winDisablePrivacyMode(cls, window: QQuickWindow):
+        hwnd = cls._getHwndWin(window)
         if hwnd:
-            cls._set_display_affinity(hwnd, cls.WDA_NONE)
+            cls._setDisplayAffinity(hwnd, cls.WDA_NONE)
 
     @staticmethod
-    def _get_ns_window(window: QQuickWindow):
+    def _getNsWindow(window: QQuickWindow):
         # Get native view pointer from QQuickWindow
         wid = window.winId()
         if wid == 0:
@@ -78,13 +78,13 @@ class WindowPrivacyService:
         return ns_window
 
     @staticmethod
-    def _get_hwnd_win(window: QQuickWindow) -> int:
+    def _getHwndWin(window: QQuickWindow) -> int:
         wid = window.winId()
         # On Windows, winId() is already the HWND (an integer)
         return int(wid) if wid else 0
 
     @staticmethod
-    def _set_display_affinity(hwnd: int, affinity: int):
+    def _setDisplayAffinity(hwnd: int, affinity: int):
         user32 = windll.user32
         user32.SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
         user32.SetWindowDisplayAffinity.restype = wintypes.BOOL
