@@ -1,7 +1,7 @@
 import platform
 
 if platform.system() == "Darwin":
-    import objc
+    from objc import objc_object
 
 elif platform.system() == "Windows":
     from ctypes import windll, wintypes
@@ -71,7 +71,7 @@ class WindowPrivacyService:
             return None
 
         # Wrap NSView pointer as objc object
-        ns_view = objc.objc_object(c_void_p=wid)
+        ns_view = objc_object(c_void_p=wid)
 
         # Get containing NSWindow
         ns_window = ns_view.window()
