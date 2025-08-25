@@ -1,44 +1,57 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.FluentWinUI3
 import QtQuick.Layouts
 
 ApplicationWindow {
-    id: root
-    width: 600
-    height: 400
-    visible: mainVM.windowVisible
-    title: "Nudgly"
+    id: overlay
+    visible: true
+    flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
+    color: "transparent"
 
-    ColumnLayout {
-        anchors.fill: parent
+    width: background.implicitWidth
+    height: background.implicitHeight
 
-        TabBar {
-            Layout.fillWidth: true
+    Rectangle {
+        id: background
+        anchors.centerIn: parent
+        radius: 16
+        color: "#15000000"
+        opacity: 0.8
 
-            TabButton {
+        implicitWidth: row.implicitWidth + 32
+        implicitHeight: row.implicitHeight + 16
+
+        RowLayout {
+            id: row
+
+            anchors {
+                fill: parent
+                leftMargin: 16
+                rightMargin: 16
+                topMargin: 8
+                bottomMargin: 8
+            }
+            spacing: 20
+
+            Button {
+                id: askAiButton
                 text: "Ask AI"
-                onClicked: mainVM.takeScreenshot()
+                font.pointSize: 14
+                onClicked: mainVM.askAi()
             }
 
-            TabButton {
-                text: "Show/Hide"
-                onClicked: mainVM.toggleWindowVisibility()
+            Button {
+                id: toggleAnswersButton
+                text: "Show/Hide Answers"
+                font.pointSize: 14
+                onClicked: mainVM.toggleAnswersWindowVisibility()
             }
 
-            TabButton {
+            Button {
+                id: settingsButton
                 text: "Settings"
+                font.pointSize: 14
                 onClicked: mainVM.openSettings()
-            }
-        }
-
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            TextArea {
-                readOnly: true
-                wrapMode: Text.Wrap
-                text: mainVM.textResult
             }
         }
     }
