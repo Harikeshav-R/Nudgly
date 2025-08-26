@@ -4,34 +4,48 @@ from nudgly.model.ask_ai_model import AskAiModel
 
 
 class MainViewModel(QObject):
-    textResultChanged = Signal()
-    windowVisibilityChanged = Signal()
+    answerResultChanged = Signal()
+    answersWindowVisibilityChanged = Signal()
 
     def __init__(self):
         super().__init__()
-        self._textResult = ""
-        self._windowVisible = True
+        self._answerResult = ""
+        self._answersWindowVisible = False
 
+    # --- Slots ---
     @Slot()
     def askAi(self):
         pixmap = AskAiModel.takeScreenshot()
         text = AskAiModel.askAi()
-        self._textResult = text
-        self.textResultChanged.emit()
+        self.answerResult = text  # Use the setter instead of direct assignment
 
     @Slot()
-    def toggleWindowVisibility(self):
-        self._windowVisible = not self._windowVisible
-        self.windowVisibilityChanged.emit()
+    def toggleAnswersWindowVisibility(self):
+        self.answersWindowVisible = not self.answersWindowVisible  # Use setter
 
     @Slot()
     def openSettings(self):
         print("Settings window requested")
 
-    @Property(str, notify=textResultChanged)
-    def textResult(self):
-        return self._textResult
+    # --- Property: answerResult ---
+    def getAnswerResult(self):
+        return self._answerResult
 
-    @Property(bool, notify=windowVisibilityChanged)
-    def windowVisible(self):
-        return self._windowVisible
+    def setAnswerResult(self, value):
+        if self._answerResult != value:
+            self._answerResult = value
+            self.answerResultChanged.emit()
+
+    answerResult = Property(str, getAnswerResult, setAnswerResult, notify=answerResultChanged)
+
+    # --- Property: answersWindowVisible ---
+    def getAnswersWindowVisible(self):
+        return self._answersWindowVisible
+
+    def setAnswersWindowVisible(self, value):
+        if self._answersWindowVisible != value:
+            self._answersWindowVisible = value
+            self.answersWindowVisibilityChanged.emit()
+
+    answersWindowVisible = Property(bool, getAnswersWindowVisible, setAnswersWindowVisible,
+                                    notify=answersWindowVisibilityChanged)

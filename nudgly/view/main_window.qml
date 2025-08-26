@@ -3,19 +3,34 @@ import QtQuick.Controls.FluentWinUI3
 import QtQuick.Layouts
 
 ApplicationWindow {
-    id: overlay
+    id: commandBar
     visible: true
     flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
     color: "transparent"
 
-    width: background.implicitWidth
-    height: background.implicitHeight
+    width: mainWindowBackground.implicitWidth
+    height: mainWindowBackground.implicitHeight
+
+    maximumWidth: width
+    maximumHeight: height
+
+    minimumWidth: width
+    minimumHeight: height
+
+    Component.onCompleted: {
+        commandBar.x = commandBar.screen.virtualX + (commandBar.screen.width - commandBar.width) / 2;
+        commandBar.y = 0
+    }
 
     Rectangle {
-        id: background
+        id: mainWindowBackground
+
+        anchors.fill: parent
         anchors.centerIn: parent
-        radius: 16
+
         color: "#15000000"
+
+        radius: 16
         opacity: 0.8
 
         implicitWidth: row.implicitWidth + 32

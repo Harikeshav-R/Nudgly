@@ -15,13 +15,14 @@ if __name__ == "__main__":
     mainVM = MainViewModel()
     engine.rootContext().setContextProperty("mainVM", mainVM)
 
-    engine.load("view/main.qml")
+    engine.load("view/main_window.qml")
+    engine.load("view/answers_window.qml")
 
     if not engine.rootObjects():
         sys.exit(-1)
 
-    # The root object is a QQuickWindow (since ApplicationWindow inherits QQuickWindow)
-    qQuickWindow: QQuickWindow = engine.rootObjects()[0]
-    WindowPrivacyService.enablePrivacyMode(qQuickWindow)
+    qQuickWindows: list[QQuickWindow] = [obj for obj in engine.rootObjects() if isinstance(obj, QQuickWindow)]
+    for window in qQuickWindows:
+        WindowPrivacyService.enablePrivacyMode(window)
 
     app.exec()
