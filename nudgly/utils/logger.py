@@ -16,68 +16,68 @@ class Logger:
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    @staticmethod
-    def _initialize():
-        if Logger._logger is not None:
+    @classmethod
+    def _initialize(cls):
+        if cls._logger is not None:
             return
 
         # Main package logger
-        Logger._logger = logging.getLogger("PackageLogger")
-        Logger._logger.setLevel(Logger._log_level)
-        Logger._logger.propagate = False
+        cls._logger = logging.getLogger("PackageLogger")
+        cls._logger.setLevel(cls._log_level)
+        cls._logger.propagate = False
 
         # Ensure log directory exists
-        Logger._log_file.parent.mkdir(parents=True, exist_ok=True)
+        cls._log_file.parent.mkdir(parents=True, exist_ok=True)
 
         # File handler (rotating)
         file_handler = RotatingFileHandler(
-            filename=Logger._log_file,
-            maxBytes=Logger._max_bytes,
-            backupCount=Logger._backup_count,
+            filename=cls._log_file,
+            maxBytes=cls._max_bytes,
+            backupCount=cls._backup_count,
             encoding="utf-8"
         )
-        file_handler.setFormatter(Logger._formatter)
+        file_handler.setFormatter(cls._formatter)
 
         # Console handler
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(Logger._formatter)
+        console_handler.setFormatter(cls._formatter)
 
         # Attach handlers to our package logger
-        Logger._logger.addHandler(file_handler)
-        Logger._logger.addHandler(console_handler)
+        cls._logger.addHandler(file_handler)
+        cls._logger.addHandler(console_handler)
 
         # Also attach handlers to the root logger for external libraries
         root_logger = logging.getLogger()
-        root_logger.setLevel(Logger._log_level)
+        root_logger.setLevel(cls._log_level)
         root_logger.addHandler(file_handler)
         root_logger.addHandler(console_handler)
 
-    @staticmethod
-    def get_logger():
-        Logger._initialize()
-        return Logger._logger
+    @classmethod
+    def get_logger(cls):
+        cls._initialize()
+        return cls._logger
 
-    @staticmethod
-    def _log(level, msg, *args, **kwargs):
+    @classmethod
+    def _log(cls, level, msg, *args, **kwargs):
         # stacklevel=3 ensures caller info points to the original caller
-        Logger.get_logger().log(level, msg, *args, stacklevel=3, **kwargs)
+        cls.get_logger().log(level, msg, *args, stacklevel=3, **kwargs)
 
-    @staticmethod
-    def debug(msg, *args, **kwargs):
-        Logger._log(logging.DEBUG, msg, *args, **kwargs)
+    @classmethod
+    def debug(cls, msg, *args, **kwargs):
+        cls._log(logging.DEBUG, msg, *args, **kwargs)
 
-    @staticmethod
-    def info(msg, *args, **kwargs):
-        Logger._log(logging.INFO, msg, *args, **kwargs)
+    @classmethod
+    def info(cls, msg, *args, **kwargs):
+        cls._log(logging.INFO, msg, *args, **kwargs)
 
-    @staticmethod
-    def warning(msg, *args, **kwargs):
-        Logger._log(logging.WARNING, msg, *args, **kwargs)
+    @classmethod
+    def warning(cls, msg, *args, **kwargs):
+        cls._log(logging.WARNING, msg, *args, **kwargs)
 
-    @staticmethod
-    def error(msg, *args, **kwargs):
-        Logger._log(logging.ERROR, msg, *args, **kwargs)
+    @classmethod
+    def error(cls, msg, *args, **kwargs):
+        cls._log(logging.ERROR, msg, *args, **kwargs)
 
-    @staticmethod
-    def critical(msg, *args, **kwargs):
-        Logger._log(logging.CRITICAL, msg, *args, **kwargs)
+    @classmethod
+    def critical(cls, msg, *args, **kwargs):
+        cls._log(logging.CRITICAL, msg, *args, **kwargs)
