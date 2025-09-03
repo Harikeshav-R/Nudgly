@@ -51,3 +51,57 @@ class ConversationModel(QAbstractListModel):
             self.ContentRole: b"content",
         }
 
+    @staticmethod
+    def _to_base64_png(pixmap: QPixmap):
+        if pixmap is None:
+            return ""
+
+        # Convert QPixmap -> QImage
+        image = pixmap.toImage()
+
+        # Write QImage into a buffer as PNG
+        buffer = QBuffer()
+        buffer.open(QIODevice.WriteOnly)
+        image.save(buffer, "PNG")
+        byte_array = buffer.data()
+        buffer.close()
+
+        # Encode to base64 string
+        return base64.b64encode(byte_array.data()).decode("utf-8")
+
+    @staticmethod
+    def take_screenshot():
+        # Get the primary screen
+        screen = QGuiApplication.primaryScreen()
+        if not screen:
+            return None
+
+        # Grab the entire desktop (winId 0 means desktop)
+        pixmap = screen.grabWindow(0)
+
+        # Convert QPixmap to base64 PNG
+        return ConversationModel._to_base64_png(pixmap)
+
+    def add_user_message(self, message: str):
+        self.beginInsertRows(QModelIndex(), len(self._history), len(self._history))
+        self._history.append(
+            {
+                "role": "user",
+                "content": message,
+                "image_data": self.take_screenshot(),
+            }
+        )
+        self.endInsertRows()
+        logger.info(f"Added user message - message number: {len(self._history)}")
+
+    def add_assistant_message(self, message: str):
+        self.beginInsertRows(QModelIndex(), len(self._history), len(self._history))
+        self._history.append(
+            {
+                "role": "assistant",
+                "content": message,
+                "image_data": None
+            }
+        )
+        self.endInsertRows()
+        logger.info(f"Added assistant message - message number: {len(self._history)}")
