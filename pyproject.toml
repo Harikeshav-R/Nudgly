@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Open Source Cluely Alternative : Gives You Just A Little Nudge"
 requires-python = ">=3.13"
 dependencies = [
+    "google-genai>=1.32.0",
     "platformdirs>=4.4.0",
     "pyobjc>=11.1; sys_platform == 'darwin'",
     "pyside6>=6.9.1",
