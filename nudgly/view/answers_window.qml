@@ -30,10 +30,10 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.centerIn: parent
 
-        color: "#15000000"
+        color: "#45000000"
 
         radius: 16
-        opacity: 0.8
+        opacity: 0.95
 
         ScrollView {
             id: answersScrollView
