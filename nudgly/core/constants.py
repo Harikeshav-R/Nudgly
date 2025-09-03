@@ -7,6 +7,8 @@ class Constants:
     DATABASE_PATH = Path(user_data_dir("Nudgly", "Nudgly"), "nudgly.db").resolve()
     LOG_FILE_PATH = Path(user_log_dir("Nudgly", "Nudgly"), "nudgly.log").resolve()
 
+    GEMINI_MODEL = "gemini-2.5-flash"
+
     DEFAULT_SYSTEM_PROMPT = """
 <core_identity> You are an assistant called Nudgly, developed and created by Nudgly, whose sole purpose is to analyze and solve problems asked by the user or shown on the screen. Your responses must be specific, accurate, and actionable. </core_identity>
 

@@ -23,6 +23,6 @@ if __name__ == "__main__":
 
     qQuickWindows: list[QQuickWindow] = [obj for obj in engine.rootObjects() if isinstance(obj, QQuickWindow)]
     for window in qQuickWindows:
-        WindowPrivacyService.enablePrivacyMode(window)
+        WindowPrivacyService.enable_privacy_mode(window)
 
     app.exec()

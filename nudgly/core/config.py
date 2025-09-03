@@ -3,8 +3,8 @@ from typing import Any, Dict, Type
 from sqlalchemy import Column, Integer, create_engine
 from sqlalchemy.orm import declarative_base, Session
 
-from nudgly.utils.constants import Constants
-from nudgly.utils.logger import Logger
+from nudgly.core.constants import Constants
+from nudgly.core.logger import Logger
 
 Base = declarative_base()
 

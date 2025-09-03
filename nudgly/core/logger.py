@@ -2,7 +2,7 @@ import logging
 
 from logging.handlers import RotatingFileHandler
 
-from nudgly.utils.constants import Constants
+from nudgly.core.constants import Constants
 
 
 class Logger:

@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal, Slot, Property
 
-from nudgly.model.ask_ai_model import AskAiModel
+from nudgly.model.conversation_model import ConversationModel
 
 
 class MainViewModel(QObject):
@@ -15,7 +15,7 @@ class MainViewModel(QObject):
     # --- Slots ---
     @Slot()
     def askAi(self):
-        pixmap = AskAiModel.takeScreenshot()
+        pixmap = AskAiModel.take_screenshot()
         text = AskAiModel.askAi()
         self.answerResult = text  # Use the setter instead of direct assignment
 
