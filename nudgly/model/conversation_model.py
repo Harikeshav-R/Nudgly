@@ -7,8 +7,10 @@ from PySide6.QtCore import (
     QAbstractListModel,
     QModelIndex,
     Qt,
-    QObject,
+    QObject, QByteArray
 )
+from PySide6.QtGui import QImage
+from PySide6.QtQuick import QQuickImageProvider
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +20,14 @@ class ConversationModel(QAbstractListModel):
     TextContentRole = Qt.UserRole + 2
     ImageContentRole = Qt.UserRole + 3
 
-    def __init__(self, chat:chats.Chat, parent: Optional[QObject] = None):
+    def __init__(self, chat: chats.Chat, parent: Optional[QObject] = None):
         super().__init__(parent)
 
         self.chat = chat
         self._history = []
+
+        self._image_cache = {}  # id -> QImage
+        self._next_image_id = 0
 
         logger.debug(f"Initialized ConversationModel.")
 
@@ -36,21 +41,29 @@ class ConversationModel(QAbstractListModel):
         item = self._history[index.row()]
 
         if role == self.RoleRole:
-            return item.get("role")
+            return item.role
 
         elif role == self.TextContentRole:
-            for part in item.get("parts", []):
-                if part.get("text") and not part.get("inline_data"):
-                    return part["text"]
-            return None
+            for part in item.parts:
+                if part.text and not part.inline_data:
+                    return part.text
+            return ""
 
         elif role == self.ImageContentRole:
-            for part in item.get("parts", []):
-                if part.get("inline_data") and not part.get("text"):
-                    return part["inline_data"].get("data")
-            return None
+            for part in item.parts:
+                if part.inline_data and not part.text:
+                    ba = QByteArray.fromRawData(part.inline_data.data)
+                    image = QImage.fromData(ba, "PNG")
 
-        return None
+                    image_id = f"img_{self._next_image_id}"
+                    self._next_image_id += 1
+                    self._image_cache[image_id] = image
+
+                    return image_id
+
+            return ""
+
+        return ""
 
     def roleNames(self):
         return {
@@ -65,3 +78,18 @@ class ConversationModel(QAbstractListModel):
         self.endResetModel()
 
         logger.info(f"Added user and model messages to conversation history")
+
+    def get_image_by_id(self, image_id: str) -> QImage:
+        return self._image_cache.get(image_id)
+
+
+class ConversationImageProvider(QQuickImageProvider):
+    def __init__(self, model: ConversationModel):
+        super().__init__(QQuickImageProvider.Image)
+        self.model = model
+
+    def requestImage(self, id_: str, size, requested_size):
+        image = self.model.get_image_by_id(id_)
+        if image:
+            return image
+        return QImage()
