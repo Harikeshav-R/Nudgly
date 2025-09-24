@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Open Source Cluely Alternative : Gives You Just A Little Nudge"
 requires-python = ">=3.13"
 dependencies = [
-    "google-genai>=1.38.0",
     "platformdirs>=4.4.0",
     "pyobjc>=11.1",
     "pyside6>=6.9.2",
+    "requests>=2.32.5",
     "sqlalchemy>=2.0.43",
 ]
