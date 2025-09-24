@@ -5,12 +5,12 @@ from sqlalchemy import Column, Integer, create_engine
 from sqlalchemy.orm import declarative_base, Session
 
 from nudgly.constants import Constants
-from nudgly.services.logger import Logger
+from nudgly.services.logging_service import LoggingService
 
 Base = declarative_base()
 
 
-class ConfigManager:
+class ConfigService:
     _engine = None
     _models: Dict[str, Type[Base]] = {}
 
@@ -18,8 +18,8 @@ class ConfigManager:
     def init(cls, config_file_path: Path = Constants.DATABASE_PATH) -> None:
         cls._engine = create_engine(f"sqlite:///{config_file_path}")
         Base.metadata.create_all(cls._engine)
-        Logger.debug("Config database initialized.")
-        Logger.debug(f"Database path: {Constants.DATABASE_PATH}")
+        LoggingService.debug("Config database initialized.")
+        LoggingService.debug(f"Database path: {Constants.DATABASE_PATH}")
 
     @classmethod
     def create_section(cls, section_name: str, fields: Dict[str, type], defaults: Dict[str, Any] = None) -> None:

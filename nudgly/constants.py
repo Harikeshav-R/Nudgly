@@ -9,6 +9,7 @@ class Constants:
 
     MODEL_NAME = "gemini-2.5-flash"
     MODEL_TEMPERATURE = 0.2
+    MODEL_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent"
 
     DEFAULT_SYSTEM_PROMPT = """
 <core_identity> You are an assistant called Nudgly, developed and created by Nudgly, whose sole purpose is to analyze and solve problems asked by the user or shown on the screen. Your responses must be specific, accurate, and actionable. </core_identity>

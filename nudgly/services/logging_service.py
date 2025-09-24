@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 from nudgly.constants import Constants
 
 
-class Logger:
+class LoggingService:
     _logger = None
     _log_file = Constants.LOG_FILE_PATH
     _max_bytes = 10 * 1024 * 1024  # 10 MB

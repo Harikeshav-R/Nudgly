@@ -2,16 +2,12 @@ from typing import Optional
 
 from PySide6.QtCore import QBuffer, QIODevice
 from PySide6.QtGui import QGuiApplication, QPixmap
-from google import genai
-from google.genai import types, chats
 
-from nudgly.services.config import ConfigManager
+from nudgly.services.config_service import ConfigService
 
 
 class LLMService:
-    _API_KEY = ConfigManager.read_value("LLM", "api_key")
-    _client = genai.Client(api_key=_API_KEY)
-    _chats = []
+    _API_KEY = ConfigService.read_value("LLM", "api_key")
 
     @staticmethod
     def _to_png(pixmap: QPixmap):
@@ -45,7 +41,7 @@ class LLMService:
         return LLMService._to_png(pixmap)
 
     @classmethod
-    def generate_answer(cls, chat: chats.Chat, prompt: Optional[str], image_data: Optional[bytes]) -> None:
+    def generate_answer(cls, chat_history: dict, prompt: Optional[str], image_data: Optional[bytes]) -> None:
         message_contents = []
 
         if image_data:
