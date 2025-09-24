@@ -7,7 +7,7 @@ if __name__ == "__main__":
     app = QGuiApplication(sys.argv)
     engine = QQmlApplicationEngine()
 
-    engine.load("nudgly/views/main_window.qml")
+    engine.load("nudgly/views/main.qml")
 
     if not engine.rootObjects():
         sys.exit(-1)
