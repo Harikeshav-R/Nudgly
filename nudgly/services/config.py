@@ -15,11 +15,11 @@ class ConfigManager:
     _models: Dict[str, Type[Base]] = {}
 
     @classmethod
-    def init(cls, config_file_path: Path = Constants.CONFIG_PATH) -> None:
+    def init(cls, config_file_path: Path = Constants.DATABASE_PATH) -> None:
         cls._engine = create_engine(f"sqlite:///{config_file_path}")
         Base.metadata.create_all(cls._engine)
         Logger.debug("Config database initialized.")
-        Logger.debug(f"Database path: {Constants.CONFIG_PATH}")
+        Logger.debug(f"Database path: {Constants.DATABASE_PATH}")
 
     @classmethod
     def create_section(cls, section_name: str, fields: Dict[str, type], defaults: Dict[str, Any] = None) -> None:
