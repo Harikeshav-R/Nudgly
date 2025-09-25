@@ -1,5 +1,7 @@
 import platform
 
+from PySide6.QtQml import QQmlApplicationEngine
+
 if platform.system() == "Darwin":
     from objc import objc_object
 
@@ -22,14 +24,26 @@ class WindowPrivacyService:
     WDA_EXCLUDEFROMCAPTURE = 0x11
 
     @classmethod
-    def enable_privacy_mode(cls, window: QQuickWindow):
+    def enable(cls, engine: QQmlApplicationEngine):
+        q_quick_windows: list[QQuickWindow] = [obj for obj in engine.rootObjects() if isinstance(obj, QQuickWindow)]
+        for window in q_quick_windows:
+            cls._enable_privacy_mode(window)
+
+    @classmethod
+    def disable(cls, engine: QQmlApplicationEngine):
+        q_quick_windows: list[QQuickWindow] = [obj for obj in engine.rootObjects() if isinstance(obj, QQuickWindow)]
+        for window in q_quick_windows:
+            cls._disable_privacy_mode(window)
+
+    @classmethod
+    def _enable_privacy_mode(cls, window: QQuickWindow):
         if platform.system() == "Darwin":
             cls._mac_enable_privacy_mode(window)
         elif platform.system() == "Windows":
             cls._win_enable_privacy_mode(window)
 
     @classmethod
-    def disable_privacy_mode(cls, window: QQuickWindow):
+    def _disable_privacy_mode(cls, window: QQuickWindow):
         if platform.system() == "Darwin":
             cls._mac_disable_privacy_mode(window)
         elif platform.system() == "Windows":
