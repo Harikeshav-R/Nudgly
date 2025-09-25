@@ -1,16 +1,21 @@
-from typing import TypedDict, List, Union, Literal
+from typing import TypedDict, List, Union, Literal, Dict, Any
+
+from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, Property, Signal
 
 
 class ImageUrl(TypedDict):
+    """Defines the structure for an image URL source."""
     url: str
 
 
 class TextPart(TypedDict):
+    """Defines the structure for a text content part."""
     type: Literal["text"]
     text: str
 
 
 class ImageUrlPart(TypedDict):
+    """Defines the structure for an image URL content part."""
     type: Literal["image_url"]
     image_url: ImageUrl
 
@@ -19,10 +24,72 @@ ContentPart = Union[TextPart, ImageUrlPart]
 
 
 class Message(TypedDict):
+    """Defines the structure for a message, containing a role and content parts."""
     role: str
     content: List[ContentPart]
 
 
 class Conversation(TypedDict):
+    """The top-level structure for the entire conversation payload."""
     model: str
     messages: List[Message]
+
+
+class ConversationModel(QAbstractListModel):
+    """
+    A Qt model for managing a conversation history, designed to be used
+    with a QML ListView. It now encapsulates the entire Conversation object.
+    """
+    modelNameChanged = Signal()
+
+    RoleRole = Qt.UserRole + 1
+    ContentRole = Qt.UserRole + 2
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._conversation: Conversation = {"model": "", "messages": []}
+
+    @Property(str, notify=modelNameChanged)
+    def modelName(self):
+        return self._conversation["model"]
+
+    def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
+        return len(self._conversation["messages"])
+
+    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Any:
+        if not index.isValid() or not (0 <= index.row() < self.rowCount()):
+            return None
+        message = self._conversation["messages"][index.row()]
+        if role == self.RoleRole:
+            return message["role"]
+        elif role == self.ContentRole:
+            return message["content"]
+        return None
+
+    def roleNames(self) -> Dict[int, bytes]:
+        return {self.RoleRole: b"role", self.ContentRole: b"content"}
+
+    # --- Public API for Modifying the Model (Slots) ---
+    @Slot(str)
+    def set_model_name(self, model_name: str):
+        """Sets the model name for the conversation and notifies listeners."""
+        if self._conversation["model"] != model_name:
+            self._conversation["model"] = model_name
+            self.modelNameChanged.emit()
+
+    def get_conversation_data(self) -> Conversation:
+        """Returns the entire conversation object, useful for API calls."""
+        return self._conversation
+
+    @Slot(str, list)
+    def add_message(self, role: str, content: List[Dict]):
+        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
+        message: Message = {"role": role, "content": content}
+        self._conversation["messages"].append(message)
+        self.endInsertRows()
+
+    @Slot()
+    def clear(self):
+        self.beginResetModel()
+        self._conversation["messages"].clear()
+        self.endResetModel()
