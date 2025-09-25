@@ -16,6 +16,7 @@ class ConfigService:
 
     @classmethod
     def init(cls, config_file_path: Path = Constants.DATABASE_PATH) -> None:
+        config_file_path.parent.mkdir(parents=True, exist_ok=True)
         cls._engine = create_engine(f"sqlite:///{config_file_path}")
         Base.metadata.create_all(cls._engine)
         LoggingService.debug("Config database initialized.")
