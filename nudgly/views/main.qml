@@ -4,7 +4,7 @@ import QtQuick.Controls.FluentWinUI3 2.15
 import QtQuick.Layouts 1.15
 
 ApplicationWindow {
-    id: window
+    id: mainWindow
 
     color: "#55000000"
     flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
@@ -13,7 +13,6 @@ ApplicationWindow {
     maximumWidth: width
     minimumHeight: height
     minimumWidth: width
-    title: "Nudgly"
     visible: true
     width: Screen.width * 0.4
     x: (Screen.width - width) / 2
