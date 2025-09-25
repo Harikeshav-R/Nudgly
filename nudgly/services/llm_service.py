@@ -74,12 +74,12 @@ class LLMService:
             return None
 
     @classmethod
-    def generate_answer(cls, conversation: Conversation) -> None:
+    def generate_answer(cls, conversation: Conversation) -> str | None:
         screenshot = cls.take_screenshot()
 
         if not screenshot:
             LoggingService.error("Capturing screen failed.")
-            return
+            return None
 
         user_text_part: TextPart = {
             "type": "text",
@@ -116,3 +116,5 @@ class LLMService:
         }
 
         conversation["messages"].append(assistant_message)
+
+        return output["choices"][0]["message"]["content"]
