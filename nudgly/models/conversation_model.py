@@ -2,6 +2,8 @@ from typing import TypedDict, List, Union, Literal, Dict, Any
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, Property, Signal
 
+from nudgly.constants import Constants
+
 
 # ---------- Request Models ----------
 class ImageUrl(TypedDict):
@@ -89,7 +91,21 @@ class ConversationModel(QAbstractListModel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._conversation: Conversation = {"model": "", "messages": []}
+
+        system_text_part: TextPart = {
+            "type": "text",
+            "text": Constants.DEFAULT_SYSTEM_PROMPT,
+        }
+
+        system_message: Message = {
+            "role": "system",
+            "content": [system_text_part]
+        }
+
+        self._conversation: Conversation = {
+            "model": Constants.MODEL_NAME,
+            "messages": [system_message]
+        }
 
     @Property(str, notify=modelNameChanged)
     def modelName(self):
