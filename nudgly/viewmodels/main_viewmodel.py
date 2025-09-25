@@ -21,7 +21,7 @@ class MainViewModel(QObject):
 
     # --- Slots ---
     @Slot()
-    def ask_ai(self):
+    def askAi(self):
         self.isThinking = True
 
         assistant_response = LLMService.generate_answer(
@@ -32,11 +32,11 @@ class MainViewModel(QObject):
         self.isThinking = False
 
     @Slot()
-    def toggle_answers_window_visibility(self):
+    def toggleAnswersWindowVisibility(self):
         self.answersWindowVisible = not self.answersWindowVisible
 
     @Slot()
-    def open_settings(self):
+    def openSettings(self):
         print("Settings window requested")
 
     # --- Property: answerResult ---
