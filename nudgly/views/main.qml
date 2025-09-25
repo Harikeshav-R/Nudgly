@@ -1,12 +1,12 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls.FluentWinUI3 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Window
+import QtQuick.Controls.FluentWinUI3
+import QtQuick.Layouts
 
 ApplicationWindow {
     id: mainWindow
 
-    color: "#55000000"
+    color: "#65000000"
     flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
     height: buttonRow.height + 30
     maximumHeight: height
@@ -37,15 +37,9 @@ ApplicationWindow {
             id: toggleWindowButton
 
             Layout.fillWidth: true
-            text: "Toggle Window"
+            text: "Toggle Answers"
 
             onClicked: mainViewModel.toggleAnswersWindowVisibility()
-        }
-        Button {
-            id: toggleInvisibilityButton
-
-            Layout.fillWidth: true
-            text: "Toggle Invisibility"
         }
         Button {
             id: settingsButton
@@ -54,6 +48,10 @@ ApplicationWindow {
             text: "Settings"
 
             onClicked: mainViewModel.openSettings()
+        }
+        BusyIndicator {
+            running: mainViewModel.isThinking
+            visible: mainViewModel.isThinking
         }
     }
 }
