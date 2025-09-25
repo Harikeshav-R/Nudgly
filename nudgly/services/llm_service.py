@@ -52,7 +52,7 @@ class LLMService:
             conversation: Conversation,
     ) -> APIResponse | None:
         headers = {
-            'x-goog-api-key': cls._API_KEY,
+            'Authorization': f"Bearer {cls._API_KEY}",
             'Content-Type': 'application/json'
         }
 
@@ -83,7 +83,7 @@ class LLMService:
 
         user_text_part: TextPart = {
             "type": "text",
-            "text": "Here is the attached image.",
+            "text": Constants.DEFAULT_SYSTEM_PROMPT,
         }
 
         user_image_part: ImageUrlPart = {
