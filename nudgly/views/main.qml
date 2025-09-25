@@ -31,12 +31,16 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             text: "Ask AI"
+
+            onClicked: mainViewModel.askAi()
         }
         Button {
             id: toggleWindowButton
 
             Layout.fillWidth: true
             text: "Toggle Window"
+
+            onClicked: mainViewModel.toggleAnswersWindowVisibility()
         }
         Button {
             id: toggleInvisibilityButton
@@ -49,6 +53,8 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             text: "Settings"
+
+            onClicked: mainViewModel.openSettings()
         }
     }
 }
