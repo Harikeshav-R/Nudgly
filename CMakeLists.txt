@@ -16,9 +16,14 @@ find_package(Qt6 COMPONENTS
         REQUIRED)
 
 add_executable(Nudgly
-        src/views/views.qrc
-
         src/main.cpp
+
+        # ----- Services -----
+        src/services/window_privacy_service.mm
+        src/services/window_privacy_service.h
+
+        # ----- Resource files -----
+        src/views/views.qrc
 )
 target_link_libraries(Nudgly
         Qt::Core
