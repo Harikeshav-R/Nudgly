@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 
     QQmlApplicationEngine engine;
 
-    engine.load(QUrl("qrc:/views/main.qml"));
+    engine.load(QUrl("qrc:/Views/Main.qml"));
 
     if (engine.rootObjects().isEmpty())
     {
