@@ -9,4 +9,3 @@ dependencies = [
     "pyside6>=6.9.2",
     "sqlalchemy>=2.0.43",
 ]
-w
