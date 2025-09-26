@@ -1,4 +1,4 @@
-#include "window_privacy_service.h"
+#include "WindowPrivacyService.h"
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
