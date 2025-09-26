@@ -1,57 +1,57 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls.FluentWinUI3
+import QtQuick.Layouts
 
 ApplicationWindow {
-    id: answersWindow
+    id: mainWindow
 
-    width: Screen.width * 0.75
-    height: Screen.height * 0.75
-
-    maximumWidth: width
-    maximumHeight: height
-
-    minimumWidth: width
-    minimumHeight: height
-
-    x: Screen.width / 2 - width / 2
-    y: Screen.width / 2 - width / 2
-
-    Component.onCompleted: {
-        answersWindow.x = answersWindow.screen.virtualX + (answersWindow.screen.width - answersWindow.width) / 2;
-        answersWindow.y = answersWindow.screen.virtualY + (answersWindow.screen.height - answersWindow.height) / 2;
-    }
-
-    visible: mainVM.answersWindowVisible
-
+    color: "#65000000"
     flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
-    color: "transparent"
+    height: buttonRow.height + 30
+    maximumHeight: height
+    maximumWidth: width
+    minimumHeight: height
+    minimumWidth: width
+    visible: true
+    width: Screen.width * 0.4
+    x: (Screen.width - width) / 2
+    y: 0
 
-    Rectangle {
-        anchors.fill: parent
+    RowLayout {
+        id: buttonRow
+
         anchors.centerIn: parent
+        spacing: 10
+        width: parent.width * 0.95
 
-        color: "#45000000"
+        Button {
+            id: askAiButton
 
-        radius: 16
-        opacity: 0.95
+            Layout.fillWidth: true
+            text: "Ask AI"
 
-        ScrollView {
-            id: answersScrollView
-            anchors.fill: parent
-            clip: true
+            onClicked: mainViewModel.askAi()
+        }
+        Button {
+            id: toggleWindowButton
 
-            TextArea {
-                id: answerText
+            Layout.fillWidth: true
+            text: "Toggle Answers"
 
-                width: answersScrollView.width
-                height: contentHeight
+            onClicked: mainViewModel.toggleAnswersWindowVisibility()
+        }
+        Button {
+            id: settingsButton
 
-                color: "white"
-                wrapMode: Text.Wrap
-                readOnly: true
+            Layout.fillWidth: true
+            text: "Settings"
 
-                text: mainVM.answerResult
-            }
+            onClicked: mainViewModel.openSettings()
+        }
+        BusyIndicator {
+            running: mainViewModel.isThinking
+            visible: mainViewModel.isThinking
         }
     }
 }

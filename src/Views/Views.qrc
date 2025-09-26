@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/Views">
         <file>Main.qml</file>
+        <file>Answer.qml</file>
     </qresource>
 </RCC>
