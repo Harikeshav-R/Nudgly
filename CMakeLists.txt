@@ -27,6 +27,9 @@ add_executable(Nudgly
         src/Services/LLMService.cpp
         src/Services/LLMService.h
 
+        src/Services/SettingsService.cpp
+        src/Services/SettingsService.h
+
         src/services/WindowPrivacyService.mm
         src/services/WindowPrivacyService.h
 
