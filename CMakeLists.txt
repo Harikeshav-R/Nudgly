@@ -17,16 +17,25 @@ find_package(Qt6 COMPONENTS
 
 add_executable(Nudgly
         src/main.cpp
+        src/constants.h
+
+        # ---- Models -----
+        src/models/ConversationModel.cpp
+        src/models/ConversationModel.h
 
         # ----- Services -----
+        src/Services/LLMService.cpp
+        src/Services/LLMService.h
+
         src/services/WindowPrivacyService.mm
         src/services/WindowPrivacyService.h
 
+        # ----- ViewModels -----
+        src/ViewModels/MainViewModel.cpp
+        src/ViewModels/MainViewModel.h
+
         # ----- Resource files -----
         src/Views/Views.qrc
-        src/models/ConversationModel.cpp
-        src/models/ConversationModel.h
-        src/constants.h
 )
 target_link_libraries(Nudgly
         Qt::Core
