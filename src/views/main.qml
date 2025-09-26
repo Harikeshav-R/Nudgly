@@ -1,18 +1,18 @@
-import QtQuick
 import QtQuick.Window
 import QtQuick.Controls.FluentWinUI3
 import QtQuick.Layouts
 
 ApplicationWindow {
-    id: mainWindow
+    id: window
 
-    color: "#65000000"
+    color: "#55000000"
     flags: Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint
     height: buttonRow.height + 30
     maximumHeight: height
     maximumWidth: width
     minimumHeight: height
     minimumWidth: width
+    title: "Nudgly"
     visible: true
     width: Screen.width * 0.4
     x: (Screen.width - width) / 2
@@ -30,28 +30,24 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             text: "Ask AI"
-
-            onClicked: mainViewModel.askAi()
         }
         Button {
             id: toggleWindowButton
 
             Layout.fillWidth: true
-            text: "Toggle Answers"
+            text: "Toggle Window"
+        }
+        Button {
+            id: toggleInvisibilityButton
 
-            onClicked: mainViewModel.toggleAnswersWindowVisibility()
+            Layout.fillWidth: true
+            text: "Toggle Invisibility"
         }
         Button {
             id: settingsButton
 
             Layout.fillWidth: true
             text: "Settings"
-
-            onClicked: mainViewModel.openSettings()
-        }
-        BusyIndicator {
-            running: mainViewModel.isThinking
-            visible: mainViewModel.isThinking
         }
     }
 }
