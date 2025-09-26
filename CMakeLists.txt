@@ -19,11 +19,14 @@ add_executable(Nudgly
         src/main.cpp
 
         # ----- Services -----
-        src/services/window_privacy_service.mm
-        src/services/window_privacy_service.h
+        src/services/WindowPrivacyService.mm
+        src/services/WindowPrivacyService.h
 
         # ----- Resource files -----
-        src/views/views.qrc
+        src/Views/Views.qrc
+        src/models/ConversationModel.cpp
+        src/models/ConversationModel.h
+        src/constants.h
 )
 target_link_libraries(Nudgly
         Qt::Core
