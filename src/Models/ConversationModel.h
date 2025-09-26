@@ -42,7 +42,7 @@ namespace Models::ConversationModel
         QList<Message> messages;
     };
 
-    class ConversationModel final : QAbstractListModel
+    class ConversationModel final : public QAbstractListModel
     {
         Q_OBJECT
         Q_PROPERTY(QString modelName READ modelName NOTIFY modelNameChanged)
