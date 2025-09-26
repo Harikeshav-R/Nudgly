@@ -39,7 +39,7 @@ void SettingsService::initializeDefaults()
         settings.setValue("initialized", true);
 
         // --- Set application default values ---
-        settings.setValue("LLM/apiKey", QString::fromUtf8(getenv("OPENAI_API_KEY")));
+        settings.setValue("LLM/apiKey", QString::fromUtf8(getenv("GEMINI_API_KEY")));
         settings.setValue("LLM/modelName", Constants::MODEL_NAME);
         settings.setValue("LLM/systemPrompt", Constants::DEFAULT_PROMPT);
     }
