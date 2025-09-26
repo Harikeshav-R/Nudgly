@@ -1,5 +1,6 @@
 #include "LLMService.h"
 #include "../Constants.h"
+#include "../Services/SettingsService.h"
 
 #include <QScreen>
 #include <QBuffer>
@@ -53,7 +54,7 @@ LLMService::LLMService(QObject* parent)
     : QObject(parent),
       m_networkManager(new QNetworkAccessManager(this))
 {
-    m_apiKey = m_settings.value("LLM/apiKey").toString();
+    m_apiKey = SettingsService::readValue("LLM/apiKey").toString();
 }
 
 QString LLMService::toBase64Png(const QPixmap& pixmap)
