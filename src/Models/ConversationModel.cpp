@@ -1,8 +1,10 @@
 #include "ConversationModel.h"
 #include "../Constants.h"
+#include "../Services/SettingsService.h"
 
-void addSystemMessage(Models::ConversationModel::Conversation* conversation, const QString& systemPrompt,
-                      const QString& modelName)
+void addSystemMessage(Models::ConversationModel::Conversation* conversation,
+                      const QString& systemPrompt = Constants::DEFAULT_PROMPT,
+                      const QString& modelName = Constants::MODEL_NAME)
 {
     // Set up the initial system message
     Models::ConversationModel::TextPart systemTextPart;
@@ -24,7 +26,10 @@ Models::ConversationModel::ConversationModel::ConversationModel(QObject* parent)
     qRegisterMetaType<ImageUrlPart>();
 
     // Set up the initial system message
-    addSystemMessage(&m_conversation, Constants::DEFAULT_PROMPT, Constants::MODEL_NAME);
+    addSystemMessage(&m_conversation,
+                     SettingsService::readValue("systemPrompt", Constants::DEFAULT_PROMPT).toString(),
+                     SettingsService::readValue("modelName", Constants::MODEL_NAME).toString()
+    );
 }
 
 int Models::ConversationModel::ConversationModel::rowCount(const QModelIndex& parent) const
