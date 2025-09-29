@@ -72,7 +72,7 @@ QString LLMService::takeScreenshot()
     if (!screen)
     {
         qCritical() << "Unable to get primary screen.";
-        return QString();
+        return {};
     }
     const QPixmap pixmap = screen->grabWindow(0);
     return toBase64Png(pixmap);
@@ -100,14 +100,16 @@ void LLMService::generateAnswer(Models::ConversationModel::ConversationModel* co
     userMessage.content.append(QVariant::fromValue(textPart));
     userMessage.content.append(QVariant::fromValue(imagePart));
 
-    sendApiRequest(userMessage, conversationModel);
+    conversationModel->addMessage(userMessage);
+
+    sendApiRequest(conversationModel);
 }
 
-void LLMService::sendApiRequest(const Models::ConversationModel::Message& userMessage,
-                                Models::ConversationModel::ConversationModel* conversationModel)
+void LLMService::sendApiRequest(
+    Models::ConversationModel::ConversationModel* conversationModel)
 {
     auto [model, messages] = conversationModel->getConversationData();
-    messages.append(userMessage);
+    // messages.append(userMessage);
 
     // Create the final JSON payload from the Conversation object
     QJsonObject payloadObject;
@@ -130,15 +132,14 @@ void LLMService::sendApiRequest(const Models::ConversationModel::Message& userMe
     QNetworkReply* reply = m_networkManager->post(request, QJsonDocument(payloadObject).toJson());
 
     connect(reply, &QNetworkReply::finished, this,
-            [this, reply, conversationModel, userMessage]
+            [this, reply, conversationModel]
             {
-                handleApiResponse(reply, conversationModel, userMessage);
+                handleApiResponse(reply, conversationModel);
             });
 }
 
 void LLMService::handleApiResponse(QNetworkReply* reply,
-                                   Models::ConversationModel::ConversationModel* conversationModel,
-                                   const Models::ConversationModel::Message& userMessage)
+                                   Models::ConversationModel::ConversationModel* conversationModel)
 {
     if (reply->error() != QNetworkReply::NoError)
     {
@@ -160,14 +161,6 @@ void LLMService::handleApiResponse(QNetworkReply* reply,
         }
         else
         {
-            // Add user message to the model first
-            QVariantList userContentList;
-            for (const auto& part : userMessage.content)
-            {
-                userContentList.append(part.toMap());
-            }
-            conversationModel->addMessage(userMessage.role, userContentList);
-
             // Extract assistant response and add it to the model
             const QString assistantText = doc.object()["choices"].toArray()[0]
                 .toObject()["message"]

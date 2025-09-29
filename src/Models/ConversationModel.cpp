@@ -96,6 +96,15 @@ void Models::ConversationModel::ConversationModel::addMessage(const QString& rol
     endInsertRows();
 }
 
+void Models::ConversationModel::ConversationModel::addMessage(const Message& message)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+
+    m_conversation.messages.append(message);
+
+    endInsertRows();
+}
+
 void Models::ConversationModel::ConversationModel::clear()
 {
     beginResetModel();

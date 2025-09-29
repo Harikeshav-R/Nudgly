@@ -22,8 +22,7 @@ public slots:
 
 private slots:
     void handleApiResponse(QNetworkReply* reply,
-                           Models::ConversationModel::ConversationModel* conversationModel,
-                           const Models::ConversationModel::Message& userMessage);
+                           Models::ConversationModel::ConversationModel* conversationModel);
 
 private:
     // Static helper functions
@@ -31,8 +30,7 @@ private:
     static QString takeScreenshot();
 
     // Private methods
-    void sendApiRequest(const Models::ConversationModel::Message& userMessage,
-                        Models::ConversationModel::ConversationModel* conversationModel);
+    void sendApiRequest(Models::ConversationModel::ConversationModel* conversationModel);
 
     // Member variables
     QString m_apiKey;

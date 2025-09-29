@@ -61,6 +61,7 @@ namespace Models::ConversationModel
 
     public slots:
         void addMessage(const QString& role, const QVariantList& content);
+        void addMessage(const Models::ConversationModel::Message& message);
         void clear();
         void setModelName(const QString& modelName);
 
