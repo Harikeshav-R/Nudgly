@@ -1,6 +1,7 @@
-#include "ConversationModel.h"
-#include "../Constants.h"
-#include "../Services/SettingsService.h"
+#include "Models/ConversationModel.h"
+
+#include "Constants.h"
+#include "Services/SettingsService.h"
 
 void addSystemMessage(Models::ConversationModel::Conversation* conversation,
                       const QString& systemPrompt = Constants::DEFAULT_PROMPT,
@@ -27,8 +28,8 @@ Models::ConversationModel::ConversationModel::ConversationModel(QObject* parent)
 
     // Set up the initial system message
     addSystemMessage(&m_conversation,
-                     SettingsService::readValue("systemPrompt", Constants::DEFAULT_PROMPT).toString(),
-                     SettingsService::readValue("modelName", Constants::MODEL_NAME).toString()
+                     Services::SettingsService::readValue("systemPrompt", Constants::DEFAULT_PROMPT).toString(),
+                     Services::SettingsService::readValue("modelName", Constants::MODEL_NAME).toString()
     );
 }
 

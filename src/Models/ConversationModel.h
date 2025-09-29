@@ -1,7 +1,3 @@
-//
-// Created by Harikeshav R on 9/25/25.
-//
-
 #ifndef NUDGLY_CONVERSATION_MODEL_H
 #define NUDGLY_CONVERSATION_MODEL_H
 

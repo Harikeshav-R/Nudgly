@@ -1,4 +1,4 @@
-#include "WindowPrivacyService.h"
+#include "Services/WindowPrivacyService.h"
 
 void Services::WindowPrivacyService::enable(const QQmlApplicationEngine* engine)
 {

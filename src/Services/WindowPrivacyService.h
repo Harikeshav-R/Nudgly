@@ -2,7 +2,7 @@
 #define NUDGLY_WINDOW_PRIVACY_SERVICE_H
 
 #include <QQuickWindow>
-#import <QQmlApplicationEngine>
+#include <QQmlApplicationEngine>
 
 namespace Services::WindowPrivacyService
 {

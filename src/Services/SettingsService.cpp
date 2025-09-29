@@ -1,9 +1,9 @@
-#include "SettingsService.h"
+#include "Services/SettingsService.h"
 
 #include <QSettings>
 #include <mutex> // For std::once_flag
 
-#include "../Constants.h"
+#include "Constants.h"
 
 namespace
 {
@@ -12,7 +12,7 @@ namespace
     std::once_flag initFlag;
 }
 
-void SettingsService::writeValue(const QString& key, const QVariant& value)
+void Services::SettingsService::writeValue(const QString& key, const QVariant& value)
 {
     // Ensure defaults are set before writing.
     std::call_once(initFlag, &SettingsService::initializeDefaults);
@@ -21,7 +21,7 @@ void SettingsService::writeValue(const QString& key, const QVariant& value)
     settings.setValue(key, value);
 }
 
-QVariant SettingsService::readValue(const QString& key, const QVariant& defaultValue)
+QVariant Services::SettingsService::readValue(const QString& key, const QVariant& defaultValue)
 {
     // Ensure defaults are set before reading.
     std::call_once(initFlag, &SettingsService::initializeDefaults);
@@ -30,7 +30,7 @@ QVariant SettingsService::readValue(const QString& key, const QVariant& defaultV
     return settings.value(key, defaultValue);
 }
 
-void SettingsService::initializeDefaults()
+void Services::SettingsService::initializeDefaults()
 {
     // Check for a sentinel key. If it doesn't exist, we know it's the first run.
     if (QSettings settings; !settings.contains("initialized"))

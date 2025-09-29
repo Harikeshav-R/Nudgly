@@ -15,6 +15,8 @@ find_package(Qt6 COMPONENTS
         Qml
         REQUIRED)
 
+include_directories(src/)
+
 add_executable(Nudgly
         src/main.cpp
         src/constants.h

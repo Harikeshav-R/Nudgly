@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QString>
 
-#include "../Models/ConversationModel.h"
-#include "../Services/LLMService.h"
+#include "Models/ConversationModel.h"
+#include "Services/LLMService.h"
 
 class MainViewModel final : public QObject
 {
@@ -51,7 +51,7 @@ private slots:
 private:
     // Member variables
     Models::ConversationModel::ConversationModel* m_conversationModel;
-    LLMService* m_llmService;
+    Services::LLMService* m_llmService;
 
     // Backing fields for properties
     QString m_answerResult;

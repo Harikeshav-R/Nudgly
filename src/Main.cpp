@@ -1,9 +1,7 @@
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "ViewModels/MainViewModel.h"
 #include "Services/WindowPrivacyService.h"
+#include "ViewModels/MainViewModel.h"
 
 
 int main(int argc, char* argv[])

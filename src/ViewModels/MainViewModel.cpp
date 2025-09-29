@@ -1,15 +1,15 @@
-#include "MainViewModel.h"
+#include "ViewModels/MainViewModel.h"
 
 #include <QDebug>
 
 MainViewModel::MainViewModel(Models::ConversationModel::ConversationModel* conversationModel, QObject* parent)
     : QObject(parent),
       m_conversationModel(conversationModel),
-      m_llmService(new LLMService(this)) // Instantiate the service
+      m_llmService(new Services::LLMService(this)) // Instantiate the service
 {
     // Connect service signals to our private handler slots
-    connect(m_llmService, &LLMService::answerGenerated, this, &MainViewModel::onAnswerReceived);
-    connect(m_llmService, &LLMService::errorOccurred, this, &MainViewModel::onApiError);
+    connect(m_llmService, &Services::LLMService::answerGenerated, this, &MainViewModel::onAnswerReceived);
+    connect(m_llmService, &Services::LLMService::errorOccurred, this, &MainViewModel::onApiError);
 }
 
 // --- Public Slots ---

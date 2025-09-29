@@ -1,6 +1,4 @@
-#include "LLMService.h"
-#include "../Constants.h"
-#include "../Services/SettingsService.h"
+#include "Services/LLMService.h"
 
 #include <QScreen>
 #include <QBuffer>
@@ -12,6 +10,9 @@
 #include <QVariantMap>
 #include <QPixMap>
 #include <QtLogging>
+
+#include "Constants.h"
+#include "Services/SettingsService.h"
 
 
 // --- JSON Serialization Helpers ---
@@ -50,14 +51,14 @@ namespace
     }
 } // end anonymous namespace
 
-LLMService::LLMService(QObject* parent)
+Services::LLMService::LLMService(QObject* parent)
     : QObject(parent),
       m_networkManager(new QNetworkAccessManager(this))
 {
     m_apiKey = SettingsService::readValue("LLM/apiKey").toString();
 }
 
-QString LLMService::toBase64Png(const QPixmap& pixmap)
+QString Services::LLMService::toBase64Png(const QPixmap& pixmap)
 {
     QByteArray byteArray;
     QBuffer buffer(&byteArray);
@@ -66,7 +67,7 @@ QString LLMService::toBase64Png(const QPixmap& pixmap)
     return QString::fromUtf8(byteArray.toBase64());
 }
 
-QString LLMService::takeScreenshot()
+QString Services::LLMService::takeScreenshot()
 {
     QScreen* screen = QGuiApplication::primaryScreen();
     if (!screen)
@@ -78,7 +79,7 @@ QString LLMService::takeScreenshot()
     return toBase64Png(pixmap);
 }
 
-void LLMService::generateAnswer(Models::ConversationModel::ConversationModel* conversationModel)
+void Services::LLMService::generateAnswer(Models::ConversationModel::ConversationModel* conversationModel)
 {
     const QString base64Screenshot = takeScreenshot();
     if (base64Screenshot.isEmpty())
@@ -105,7 +106,7 @@ void LLMService::generateAnswer(Models::ConversationModel::ConversationModel* co
     sendApiRequest(conversationModel);
 }
 
-void LLMService::sendApiRequest(
+void Services::LLMService::sendApiRequest(
     Models::ConversationModel::ConversationModel* conversationModel)
 {
     auto [model, messages] = conversationModel->getConversationData();
@@ -138,8 +139,8 @@ void LLMService::sendApiRequest(
             });
 }
 
-void LLMService::handleApiResponse(QNetworkReply* reply,
-                                   Models::ConversationModel::ConversationModel* conversationModel)
+void Services::LLMService::handleApiResponse(QNetworkReply* reply,
+                                             Models::ConversationModel::ConversationModel* conversationModel)
 {
     if (reply->error() != QNetworkReply::NoError)
     {
