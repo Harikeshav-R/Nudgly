@@ -103,6 +103,10 @@ void Services::LLMService::generateAnswer(Models::ConversationModel::Conversatio
 
     conversationModel->addMessage(userMessage);
 
+    Models::ConversationModel::Message assistantPlaceholder;
+    assistantPlaceholder.role = "assistant";
+    conversationModel->addMessage(assistantPlaceholder);
+
     sendApiRequest(conversationModel);
 }
 
@@ -124,60 +128,85 @@ void Services::LLMService::sendApiRequest(
         messagesArray.append(msgObject);
     }
     payloadObject["messages"] = messagesArray;
+    payloadObject["stream"] = true;
 
     QNetworkRequest request(Constants::MODEL_ENDPOINT);
     request.setRawHeader("Authorization", ("Bearer " + m_apiKey).toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    qInfo() << "Sending request to API...";
-    QNetworkReply* reply = m_networkManager->post(request, QJsonDocument(payloadObject).toJson());
+    m_fullResponse.clear();
+    m_streamBuffer.clear();
 
-    connect(reply, &QNetworkReply::finished, this,
-            [this, reply, conversationModel]
-            {
-                handleApiResponse(reply, conversationModel);
-            });
+    m_currentReply = m_networkManager->post(request, QJsonDocument(payloadObject).toJson());
+    m_currentModel = conversationModel; // Store model for use in slots
+
+    // Connect to the readyRead signal to process chunks as they arrive
+    connect(m_currentReply, &QNetworkReply::readyRead, this, &LLMService::handleApiStream);
+
+    // Connect to the finished signal for cleanup and finalization
+    connect(m_currentReply, &QNetworkReply::finished, this, &LLMService::handleApiFinished);
+
+    // Connect to the error signal for robust error handling
+    connect(m_currentReply, &QNetworkReply::errorOccurred, this, [this](const QNetworkReply::NetworkError code)
+    {
+        qCritical() << "Network error occurred:" << code << m_currentReply->errorString();
+        emit errorOccurred(m_currentReply->errorString());
+    });
 }
 
-void Services::LLMService::handleApiResponse(QNetworkReply* reply,
-                                             Models::ConversationModel::ConversationModel* conversationModel)
+void Services::LLMService::handleApiStream()
 {
-    if (reply->error() != QNetworkReply::NoError)
+    // Append new data from the reply to our buffer
+    m_streamBuffer.append(m_currentReply->readAll());
+
+    // Process the buffer line by line. SSE events are separated by "\n\n".
+    QList<QByteArray> events = m_streamBuffer.split('\n');
+    m_streamBuffer = events.takeLast(); // Keep incomplete line in buffer
+
+    for (const QByteArray& event : events)
     {
-        const QString errorString = reply->errorString();
-        const QByteArray responseBody = reply->readAll();
-        qCritical() << QString("Error making API request: %1").arg(errorString);
-        qInfo() << QString("Response Body: %1").arg(QString::fromUtf8(responseBody));
-        emit errorOccurred(errorString);
+        if (event.startsWith("data: "))
+        {
+            QByteArray jsonData = event.mid(6);
+            if (jsonData.trimmed() == "[DONE]")
+            {
+                continue; // The 'finished' signal will handle the end
+            }
+
+            QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+            if (!doc.isObject()) continue;
+
+            // Extract the text chunk from the delta
+            const QString chunk = doc.object()["choices"].toArray()[0]
+                .toObject()["delta"]
+                .toObject()["content"].toString();
+
+            if (!chunk.isEmpty())
+            {
+                m_fullResponse.append(chunk);
+                m_currentModel->appendToLastMessage(chunk);
+                emit answerChunkReceived(chunk);
+            }
+        }
+    }
+}
+
+void Services::LLMService::handleApiFinished()
+{
+    if (m_currentReply->error() == QNetworkReply::NoError)
+    {
+        // Handle any remaining data in the buffer
+        handleApiStream();
+        qInfo() << "API stream finished successfully.";
+        emit answerGenerated(m_fullResponse);
     }
     else
     {
-        qInfo() << ("Request successful.");
-
-        if (const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll()); doc.isNull() || !doc.isObject())
-        {
-            const QString errorMsg = "Error: Failed to parse JSON response.";
-            qFatal() << errorMsg;
-            emit errorOccurred(errorMsg);
-        }
-        else
-        {
-            // Extract assistant response and add it to the model
-            const QString assistantText = doc.object()["choices"].toArray()[0]
-                .toObject()["message"]
-                .toObject()["content"].toString();
-            const QString assistantRole = doc.object()["choices"].toArray()[0]
-                .toObject()["message"]
-                .toObject()["role"].toString();
-
-            QVariantMap textPartMap;
-            textPartMap["type"] = "text";
-            textPartMap["text"] = assistantText;
-            conversationModel->addMessage(assistantRole, {textPartMap});
-
-            emit answerGenerated(assistantText);
-        }
+        // Error signal will have already been emitted.
+        qCritical() << "API stream finished with error:" << m_currentReply->errorString();
     }
 
-    reply->deleteLater();
+    m_currentReply->deleteLater();
+    m_currentReply = nullptr;
+    m_currentModel = nullptr;
 }

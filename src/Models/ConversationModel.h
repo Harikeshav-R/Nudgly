@@ -5,7 +5,7 @@
 #include <QString>
 #include <QAbstractListModel>
 
-namespace Models::ConversationModel
+    namespace Models::ConversationModel
 {
     struct ImageUrl
     {
@@ -60,6 +60,7 @@ namespace Models::ConversationModel
         void addMessage(const Models::ConversationModel::Message& message);
         void clear();
         void setModelName(const QString& modelName);
+        void appendToLastMessage(const QString &textChunk);
 
     signals:
         void modelNameChanged();

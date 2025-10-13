@@ -8,7 +8,8 @@ MainViewModel::MainViewModel(Models::ConversationModel::ConversationModel* conve
       m_llmService(new Services::LLMService(this)) // Instantiate the service
 {
     // Connect service signals to our private handler slots
-    connect(m_llmService, &Services::LLMService::answerGenerated, this, &MainViewModel::onAnswerReceived);
+    connect(m_llmService, &Services::LLMService::answerChunkReceived, this, &MainViewModel::onAnswerChunkReceived);
+    connect(m_llmService, &Services::LLMService::answerGenerated, this, &MainViewModel::onAnswerFinished);
     connect(m_llmService, &Services::LLMService::errorOccurred, this, &MainViewModel::onApiError);
 }
 
@@ -17,6 +18,7 @@ MainViewModel::MainViewModel(Models::ConversationModel::ConversationModel* conve
 void MainViewModel::askAi()
 {
     // This is non-blocking. It starts the task and returns immediately.
+    setAnswerResult("");
     setIsThinking(true);
     m_llmService->generateAnswer(m_conversationModel);
 }
@@ -33,9 +35,19 @@ void MainViewModel::openSettings()
 
 // --- Private Slots ---
 
-void MainViewModel::onAnswerReceived(const QString& assistantResponse)
+void MainViewModel::onAnswerChunkReceived(const QString& chunk)
 {
-    setAnswerResult(assistantResponse);
+    // Append the incoming text chunk to the current answer result.
+    // The setter will emit the changed signal, updating the UI in real-time.
+    setAnswerResult(m_answerResult + chunk);
+}
+
+void MainViewModel::onAnswerFinished(const QString& fullAnswer)
+{
+    // The stream has finished. Finalize the state.
+    // This ensures the final text is consistent and, most importantly,
+    // it updates the thinking state to stop any loading indicators in the UI.
+    setAnswerResult(fullAnswer);
     setIsThinking(false);
 }
 
@@ -60,7 +72,11 @@ void MainViewModel::setAnswerResult(const QString& answerResult)
         m_answerResult = answerResult;
         emit answerResultChanged();
 
-        setAnswersWindowVisible(true);
+        // Side-effect: show the answers window when a new result arrives
+        if (answerResult.isEmpty())
+        {
+            setAnswersWindowVisible(true);
+        }
     }
 }
 

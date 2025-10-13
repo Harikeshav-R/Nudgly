@@ -45,7 +45,8 @@ signals:
 
 private slots:
     // Private slots for handling service signals
-    void onAnswerReceived(const QString& assistantResponse);
+    void onAnswerChunkReceived(const QString& chunk); // <-- New slot for streaming
+    void onAnswerFinished(const QString& fullAnswer); // Renamed for clarity
     void onApiError(const QString& errorMessage);
 
 private:

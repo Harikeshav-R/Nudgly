@@ -134,3 +134,41 @@ const Models::ConversationModel::Conversation& Models::ConversationModel::Conver
 {
     return m_conversation;
 }
+
+void Models::ConversationModel::ConversationModel::appendToLastMessage(const QString& textChunk)
+{
+    if (m_conversation.messages.isEmpty())
+    {
+        return; // Nothing to append to
+    }
+
+    // Get a reference to the last message in the list
+
+    if (auto& [role, content] = m_conversation.messages.last(); content.isEmpty())
+    {
+        // If the last message has no content, add a new text part
+        TextPart newPart;
+        newPart.text = textChunk;
+        content.append(QVariant::fromValue(newPart));
+    }
+    else
+    {
+        // Find the last text part to append to
+        // We iterate backwards to find the most recent text part
+        for (int i = content.size() - 1; i >= 0; --i)
+        {
+            if (QVariant& partVariant = content[i]; partVariant.canConvert<TextPart>())
+            {
+                auto part = partVariant.value<TextPart>();
+                part.text.append(textChunk);
+                // Store the modified struct back into the QVariant
+                partVariant.setValue(part);
+
+                // Notify the view that the data for the last row has changed
+                const QModelIndex lastIndex = index(rowCount() - 1, 0);
+                emit dataChanged(lastIndex, lastIndex, {ContentRole});
+                return; // Exit after appending
+            }
+        }
+    }
+}

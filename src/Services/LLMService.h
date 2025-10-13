@@ -19,13 +19,14 @@ namespace Services
     signals:
         void answerGenerated(const QString& answer);
         void errorOccurred(const QString& error);
+        void answerChunkReceived(const QString& chunk);
 
     public slots:
         void generateAnswer(Models::ConversationModel::ConversationModel* conversationModel);
 
     private slots:
-        void handleApiResponse(QNetworkReply* reply,
-                               Models::ConversationModel::ConversationModel* conversationModel);
+        void handleApiStream();
+        void handleApiFinished();
 
     private:
         // Static helper functions
@@ -39,6 +40,12 @@ namespace Services
         QString m_apiKey;
         QNetworkAccessManager* m_networkManager;
         QSettings m_settings;
+
+        QNetworkReply* m_currentReply = nullptr; // Keep track of the current reply
+        Models::ConversationModel::ConversationModel* m_currentModel = nullptr; // And the current model
+
+        QByteArray m_streamBuffer; // Buffer for incoming data chunks
+        QString m_fullResponse; // Buffer for the complete final answer
     };
 }
 
