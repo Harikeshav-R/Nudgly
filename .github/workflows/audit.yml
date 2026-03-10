@@ -1,0 +1,27 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: Audit on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+        
+    - name: Run .NET Vulnerability Audit
+      run: dotnet list package --vulnerable
