@@ -5,6 +5,7 @@ using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nudgly.Shared.Services;
 using Nudgly.Shared.ViewModels;
 using Nudgly.Shared.Views;
@@ -41,17 +42,33 @@ public partial class App : Application
 
             Avalonia.Controls.Window.WindowOpenedEvent.AddClassHandler<Avalonia.Controls.Window>(Desktop_WindowOpened);
             desktop.MainWindow = mainWindow;
+            desktop.Exit += OnExit;
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void Desktop_WindowOpened(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private static void Desktop_WindowOpened(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (sender is Avalonia.Controls.Window window)
+        if (sender is not Avalonia.Controls.Window window) return;
+
+        try
         {
             var captureService = Services?.GetService<ICaptureExclusionService>();
             captureService?.ExcludeFromCapture(window);
+        }
+        catch (Exception ex)
+        {
+            var logger = Services?.GetService<ILogger<App>>();
+            logger?.LogError(ex, "An unexpected error occurred while applying capture exclusion to window {WindowType}", window.GetType().Name);
+        }
+    }
+
+    private static void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+    {
+        if (Services is IDisposable disposable)
+        {
+            disposable.Dispose();
         }
     }
 

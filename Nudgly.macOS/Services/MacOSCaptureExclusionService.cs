@@ -31,7 +31,7 @@ public partial class MacOSCaptureExclusionService : ICaptureExclusionService
         if (handle is null)
         {
             LogMissingHandle();
-            throw new InvalidOperationException("Could not obtain NSWindow");
+            return;
         }
 
         LogApplyingExclusion(handle.Value);

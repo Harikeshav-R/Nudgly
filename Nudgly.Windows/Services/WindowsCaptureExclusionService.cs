@@ -36,7 +36,7 @@ public partial class WindowsCaptureExclusionService : ICaptureExclusionService
         if (handle is null)
         {
             LogMissingHandle();
-            throw new InvalidOperationException("Could not obtain HWND");
+            return;
         }
 
         var hwnd = (HWND)handle.Value;
@@ -46,7 +46,7 @@ public partial class WindowsCaptureExclusionService : ICaptureExclusionService
         {
             var error = Marshal.GetLastWin32Error();
             LogExclusionFailure(handle.Value, error);
-            throw new Win32Exception(error);
+            return;
         }
 
         LogExclusionSuccess();
