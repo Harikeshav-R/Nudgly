@@ -17,24 +17,24 @@ jobs:
             rid: osx-x64
           - os: macos-latest
             rid: osx-arm64
-            
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
+
     - name: Publish
       run: dotnet publish --configuration Release --runtime ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o ./publish
-      
+
     - name: Zip Release
       shell: bash
       run: |
         cd ./publish
         zip -r ../Nudgly-${{ matrix.rid }}.zip ./*
-        
+
     - name: Upload Release Asset
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

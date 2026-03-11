@@ -11,7 +11,7 @@ Currently, only the latest major version is supported with security updates.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within this project, please responsibly disclose it. 
+If you discover a security vulnerability within this project, please responsibly disclose it.
 
 Do NOT open a public issue. Instead, please send an email to the repository maintainer or use the GitHub Security Advisory feature to report the vulnerability privately.
 

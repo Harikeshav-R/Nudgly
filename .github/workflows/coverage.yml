@@ -13,21 +13,21 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
+
     - name: Restore dependencies
       run: dotnet restore
-      
+
     - name: Test with Coverage
       run: dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./coverage
-      
+
     - name: Upload coverage reports
       uses: actions/upload-artifact@v4
       with:

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report! 
+        Thanks for taking the time to fill out this bug report!
         Please provide as much detail as possible. Remember we only support Windows and macOS.
   - type: input
     id: version
@@ -40,9 +40,9 @@ body:
       label: Steps to Reproduce
       description: How can we reproduce this bug?
       value: |
-        1. 
-        2. 
-        3. 
+        1.
+        2.
+        3.
     validations:
       required: true
   - type: textarea
