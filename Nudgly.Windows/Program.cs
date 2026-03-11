@@ -26,6 +26,7 @@ sealed class Program
 #endif
             });
             services.AddSingleton<ICaptureExclusionService, WindowsCaptureExclusionService>();
+            services.AddSingleton<IScreenCaptureService, WindowsScreenCaptureService>();
         });
 
         BuildAvaloniaApp()

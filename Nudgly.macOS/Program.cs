@@ -30,6 +30,7 @@ sealed class Program
 #endif
             });
             services.AddSingleton<ICaptureExclusionService, MacOSCaptureExclusionService>();
+            services.AddSingleton<IScreenCaptureService, MacOsScreenCaptureService>();
         });
 
         BuildAvaloniaApp()
