@@ -1,12 +1,15 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Nudgly.Shared.App"
-             xmlns:local="using:Nudgly.Shared"
+             xmlns:views="using:Nudgly.Shared.Views"
+             xmlns:vm="using:Nudgly.Shared.ViewModels"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <DataTemplate DataType="{x:Type vm:MainWindowViewModel}">
+            <views:MainWindow />
+        </DataTemplate>
     </Application.DataTemplates>
   
     <Application.Styles>
