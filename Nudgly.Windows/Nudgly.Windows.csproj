@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PublishAot>true</PublishAot>
+        <InvariantGlobalization>true</InvariantGlobalization>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Avalonia" Version="11.3.12" />
+      <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nudgly.Shared\Nudgly.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

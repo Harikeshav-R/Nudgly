@@ -1,1 +1,5 @@
-<Solution />
+<Solution>
+  <Project Path="Nudgly.macOS/Nudgly.macOS.csproj" />
+  <Project Path="Nudgly.Shared/Nudgly.Shared.csproj" />
+  <Project Path="Nudgly.Windows/Nudgly.Windows.csproj" />
+</Solution>
