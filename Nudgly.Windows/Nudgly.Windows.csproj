@@ -34,6 +34,8 @@
       <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.4" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.4" />
       <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         <PrivateAssets>all</PrivateAssets>
@@ -42,6 +44,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Nudgly.Shared\Nudgly.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="NativeMethods.txt" />
     </ItemGroup>
 
 </Project>
