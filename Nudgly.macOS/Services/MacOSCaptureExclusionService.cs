@@ -34,6 +34,8 @@ public partial class MacOSCaptureExclusionService : ICaptureExclusionService
             throw new InvalidOperationException("Could not obtain NSWindow");
         }
 
+        LogApplyingExclusion(handle.Value);
+
 #pragma warning disable CA1416
         var nsWindow = ObjCRuntime.Runtime.GetNSObject<NSWindow>(handle.Value);
 #pragma warning restore CA1416

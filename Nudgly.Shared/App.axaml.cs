@@ -11,7 +11,7 @@ using Nudgly.Shared.Views;
 
 namespace Nudgly.Shared;
 
-public class App : Application
+public partial class App : Application
 {
     public static IServiceProvider? Services { get; private set; }
 

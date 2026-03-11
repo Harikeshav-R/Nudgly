@@ -1,5 +1,6 @@
-﻿using Avalonia;
+using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nudgly.Shared;
 using Nudgly.Shared.Services;
 using Nudgly.Windows.Services;
@@ -16,7 +17,14 @@ sealed class Program
     {
         App.ConfigureServices(services =>
         {
-            services.AddLogging();
+            services.AddLogging(builder =>
+            {
+#if DEBUG
+                builder.AddDebug();
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+#endif
+            });
             services.AddSingleton<ICaptureExclusionService, WindowsCaptureExclusionService>();
         });
 
