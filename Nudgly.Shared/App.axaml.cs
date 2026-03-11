@@ -1,16 +1,27 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.DependencyInjection;
+using Nudgly.Shared.Services;
 using Nudgly.Shared.ViewModels;
 using Nudgly.Shared.Views;
 
 namespace Nudgly.Shared;
 
-public partial class App : Application
+public class App : Application
 {
+    public static IServiceProvider? Services { get; private set; }
+
+    public static void ConfigureServices(Action<IServiceCollection> configure)
+    {
+        var services = new ServiceCollection();
+        configure(services);
+        Services = services.BuildServiceProvider();
+    }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -23,13 +34,25 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow
+            var mainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(),
             };
+
+            Avalonia.Controls.Window.WindowOpenedEvent.AddClassHandler<Avalonia.Controls.Window>(Desktop_WindowOpened);
+            desktop.MainWindow = mainWindow;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void Desktop_WindowOpened(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is Avalonia.Controls.Window window)
+        {
+            var captureService = Services?.GetService<ICaptureExclusionService>();
+            captureService?.ExcludeFromCapture(window);
+        }
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
