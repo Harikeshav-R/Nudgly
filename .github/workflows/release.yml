@@ -13,9 +13,9 @@ jobs:
         include:
           - os: windows-latest
             rid: win-x64
-          - os: macos-latest
+          - os: macos-26
             rid: osx-x64
-          - os: macos-latest
+          - os: macos-26
             rid: osx-arm64
 
     steps:
@@ -24,10 +24,29 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '10.0.x'
+
+    - name: Install workloads
+      run: |
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          dotnet workload restore Nudgly.macOS/Nudgly.macOS.csproj
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          dotnet workload restore Nudgly.Windows/Nudgly.Windows.csproj
+        fi
+      shell: bash
+
+    - name: Restore dependencies
+      run: dotnet restore Nudgly.slnx
 
     - name: Publish
-      run: dotnet publish --configuration Release --runtime ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o ./publish
+      run: |
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          PROJECT="Nudgly.macOS/Nudgly.macOS.csproj"
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          PROJECT="Nudgly.Windows/Nudgly.Windows.csproj"
+        fi
+        dotnet publish $PROJECT --configuration Release --runtime ${{ matrix.rid }} -p:PublishAot=true -p:StripSymbols=true -o ./publish
+      shell: bash
 
     - name: Zip Release
       shell: bash
