@@ -68,7 +68,7 @@ The overlay window must be configured with the following properties at creation 
 ### Avalonia UI Patterns
 
 - **MVVM:** Strictly follow the MVVM pattern. Views contain no business logic. ViewModels expose only what the View needs.
-- **Reactive:** Use ReactiveUI (Avalonia's preferred MVVM library) for bindings, commands, and reactive properties.
+- **CommunityToolkit:** Use CommunityToolkit for bindings, commands, and reactive properties.
 - **Styles:** Define all visual styles in `.axaml` resource dictionaries. Do not hardcode colours or sizes in control markup.
 - **Platform Abstraction:** Inject platform-specific services (e.g., `ICaptureExclusionService`) via the DI container. The shared project must never contain `#if WINDOWS` or `#if MACOS` directives — that logic belongs in the platform projects.
 

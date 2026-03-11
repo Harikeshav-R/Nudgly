@@ -11,9 +11,25 @@ repos:
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: detect-private-key
+      - id: no-commit-to-branch
+        args: [--branch, main, --branch, master]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v3.1.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: local
+    hooks:
+      - id: dotnet-format
+        name: dotnet format
+        entry: dotnet format Nudgly.slnx --include
+        language: system
+        files: \.cs$
+        pass_filenames: true
+      - id: dotnet-build
+        name: dotnet build
+        entry: dotnet build Nudgly.slnx
+        language: system
+        files: \.(cs|axaml|csproj|slnx)$
+        pass_filenames: false
