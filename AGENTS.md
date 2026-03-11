@@ -19,7 +19,7 @@ To deliver a screenshare-proof overlay, this project runs as a normal standalone
 
 | Platform | Capture Exclusion API | Binding Method |
 |---|---|---|
-| Windows | `SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE)` | Win32 P/Invoke |
+| Windows | `PInvoke.SetWindowDisplayAffinity((HWND)hwnd, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE)` | CsWin32 |
 | macOS | `NSWindow.sharingType = .none` | .NET macOS SDK (AppKit bindings) |
 
 ### Platform Project Structure
@@ -39,7 +39,7 @@ Each platform project is a standalone executable that references `YourApp.Shared
 
 - **Simplicity:** A standalone process is straightforward to build, distribute, and debug. No injection scaffolding, no cross-process communication.
 - **Screenshare Immunity:** Leverages native OS compositor-level exclusion (`WDA_EXCLUDEFROMCAPTURE` / `sharingType = .none`) rather than fragile capture software hooking.
-- **Clean Interop:** macOS uses first-class .NET macOS SDK AppKit bindings (no raw P/Invoke). Windows uses well-documented Win32 P/Invoke with a minimal surface area.
+- **Clean Interop:** macOS uses first-class .NET macOS SDK AppKit bindings (no raw P/Invoke). Windows uses `Microsoft.Windows.CsWin32` source generators to eliminate manual P/Invoke wrappers entirely.
 - **Avalonia Compatibility:** Avalonia renders reliably on the transparent surface we own and control.
 
 ### Window Configuration
@@ -93,7 +93,7 @@ All agents must adhere to a strict branching and commit workflow to ensure code 
 ### 2.2 Commit Guidelines
 
 - **Conventional Commits:** You must strictly follow the [Conventional Commits](https://www.conventionalcommits.org/) format for all commit subjects.
-  - *Examples:* `feat(overlay): implement WDA_EXCLUDEFROMCAPTURE on Windows`, `fix(macos): correct NSWindow sharingType binding`
+  - *Examples:* `feat(overlay): implement CsWin32 capture exclusion on Windows`, `fix(macos): correct NSWindow sharingType binding`
 - **Commit Bodies (Mandatory):** Every commit MUST include a descriptive subject line AND a detailed, multiline commit description.
   - The body should explain the *why* and *how* of the change, not just the *what*.
   - If a commit contains multiple logical changes or touches several components, use bullet points in the description body to detail each change.
@@ -115,25 +115,23 @@ Detailed, structured logging is a project-wide requirement. Visibility into over
 
 ## 4. Platform-Specific Implementation Notes
 
-### Windows — Win32 P/Invoke
+### Windows — CsWin32 Source Generators
 
-The Windows platform project handles capture exclusion via a minimal, well-typed P/Invoke surface:
+The Windows platform project handles capture exclusion by leveraging `Microsoft.Windows.CsWin32` to automatically generate high-performance, AOT-safe native bindings. Avoid defining raw P/Invoke signatures.
 
-```csharp
-internal static partial class NativeMethods
-{
-    [LibraryImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool SetWindowDisplayAffinity(IntPtr hWnd, uint dwAffinity);
+Specify the required APIs in your project's `NativeMethods.txt`:
 
-    internal const uint WDA_NONE               = 0x00000000;
-    internal const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
-}
+```text
+SetWindowDisplayAffinity
 ```
 
 Capture exclusion must be applied immediately after the Avalonia window is initialised, before the first render:
 
 ```csharp
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 public class WindowsCaptureExclusionService : ICaptureExclusionService
 {
     public void ExcludeFromCapture(Window window)
@@ -141,14 +139,14 @@ public class WindowsCaptureExclusionService : ICaptureExclusionService
         var hwnd = window.TryGetPlatformHandle()?.Handle
             ?? throw new InvalidOperationException("Could not obtain HWND");
 
-        if (!NativeMethods.SetWindowDisplayAffinity(hwnd, NativeMethods.WDA_EXCLUDEFROMCAPTURE))
+        if (!PInvoke.SetWindowDisplayAffinity((HWND)hwnd, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE))
             throw new Win32Exception(Marshal.GetLastWin32Error());
     }
 }
 ```
 
-- Use `LibraryImport` (source-generated P/Invoke) over `DllImport` for new code — it is AOT-safe and avoids runtime marshalling overhead.
-- Wrap all P/Invoke calls in a typed service implementing `ICaptureExclusionService`. Never call P/Invoke directly from ViewModels or Avalonia code.
+- Always use `Microsoft.Windows.CsWin32` over manual `DllImport` or `LibraryImport` — it ensures correct types, memory safety, AOT compatibility, and reduces maintenance.
+- Wrap all interop calls in a typed service implementing `ICaptureExclusionService`. Never call `PInvoke.*` methods directly from ViewModels or Avalonia code.
 
 ### macOS — .NET macOS SDK (AppKit Bindings)
 

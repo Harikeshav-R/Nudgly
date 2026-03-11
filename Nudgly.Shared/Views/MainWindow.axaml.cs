@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using SukiUI.Controls;
 
 namespace Nudgly.Shared.Views;
@@ -9,4 +8,5 @@ public partial class MainWindow : SukiWindow
     {
         InitializeComponent();
     }
+
 }
