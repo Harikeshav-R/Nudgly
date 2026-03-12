@@ -61,8 +61,8 @@ jobs:
         dotnet publish $PROJECT --configuration Release --runtime ${{ matrix.rid }} -p:PublishAot=true -p:StripSymbols=true -o ./publish
 
         if [ "$RUNNER_OS" == "macOS" ]; then
-          # Create DMG from the .app bundle (hdiutil is built-in on macOS runners)
-          hdiutil create -volname "Nudgly" -srcfolder ./publish/Nudgly.app -ov -format UDZO Nudgly-${{ matrix.rid }}.dmg
+          # Create DMG from the .app bundle (the macOS SDK places it in the bin folder regardless of the -o flag)
+          hdiutil create -volname "Nudgly" -srcfolder Nudgly.macOS/bin/Release/net10.0-macos/${{ matrix.rid }}/Nudgly.app -ov -format UDZO Nudgly-${{ matrix.rid }}.dmg
         else
           # On Windows, rename the binary to include the RID
           mv ./publish/Nudgly.exe ./Nudgly-${{ matrix.rid }}.exe
