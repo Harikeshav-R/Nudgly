@@ -5,8 +5,21 @@ using ScreenCaptureKit;
 
 namespace Nudgly.macOS.Services;
 
-public partial class MacOsScreenCaptureService(ILogger<MacOsScreenCaptureService> logger) : IScreenCaptureService
+public partial class MacOSScreenCaptureService : IScreenCaptureService
 {
+    private readonly ILogger<MacOSScreenCaptureService> _logger;
+
+    public MacOSScreenCaptureService(ILogger<MacOSScreenCaptureService> logger)
+    {
+        _logger = logger;
+    }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Capturing primary display: Width={Width}, Height={Height}")]
+    private partial void LogCapturingScreen(int width, int height);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Screen capture completed and Avalonia Bitmap generated.")]
+    private partial void LogCaptureCompleted();
+
     [LoggerMessage(Level = LogLevel.Warning, Message = "No displays found for screen capture.")]
     private partial void LogNoDisplaysFound();
 
@@ -34,6 +47,8 @@ public partial class MacOsScreenCaptureService(ILogger<MacOsScreenCaptureService
                 LogNoDisplaysFound();
                 return null;
             }
+
+            LogCapturingScreen((int)display.Width, (int)display.Height);
 
             // Exclude empty array of windows to capture the whole display
             var filter = new SCContentFilter(display, Array.Empty<SCWindow>(), SCContentFilterOption.Exclude);
@@ -69,7 +84,9 @@ public partial class MacOsScreenCaptureService(ILogger<MacOsScreenCaptureService
             }
 
             using var stream = new MemoryStream(pngData.ToArray());
-            return new Bitmap(stream);
+            var bitmap = new Bitmap(stream);
+            LogCaptureCompleted();
+            return bitmap;
         }
         catch (Exception ex)
         {
