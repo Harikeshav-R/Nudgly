@@ -7,8 +7,6 @@
         <AssemblyName>Nudgly</AssemblyName>
         <ApplicationId>com.nudgly.app</ApplicationId>
         <ApplicationTitle>Nudgly</ApplicationTitle>
-        <ApplicationVersion>1.0</ApplicationVersion>
-        <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PublishAot>true</PublishAot>
