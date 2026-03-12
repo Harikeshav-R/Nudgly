@@ -1,1 +1,15 @@
 SetWindowDisplayAffinity
+GetSystemMetrics
+SYSTEM_METRICS_INDEX
+GetDC
+ReleaseDC
+CreateCompatibleDC
+DeleteDC
+CreateCompatibleBitmap
+SelectObject
+DeleteObject
+BitBlt
+GetDIBits
+ROP_CODE
+DIB_USAGE
+BI_COMPRESSION
