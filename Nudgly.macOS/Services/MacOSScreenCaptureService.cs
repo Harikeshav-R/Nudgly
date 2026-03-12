@@ -40,7 +40,7 @@ public partial class MacOSScreenCaptureService : IScreenCaptureService
     {
         try
         {
-            var content = await SCShareableContent.GetShareableContentAsync(false, true);
+            using var content = await SCShareableContent.GetShareableContentAsync(false, true);
             var display = content.Displays.FirstOrDefault();
 
             if (display == null)
@@ -52,8 +52,8 @@ public partial class MacOSScreenCaptureService : IScreenCaptureService
             LogCapturingScreen((int)display.Width, (int)display.Height);
 
             // Exclude empty array of windows to capture the whole display
-            var filter = new SCContentFilter(display, Array.Empty<SCWindow>(), SCContentFilterOption.Exclude);
-            var config = new SCStreamConfiguration
+            using var filter = new SCContentFilter(display, Array.Empty<SCWindow>(), SCContentFilterOption.Exclude);
+            using var config = new SCStreamConfiguration
             {
                 Width = (nuint)display.Width,
                 Height = (nuint)display.Height,

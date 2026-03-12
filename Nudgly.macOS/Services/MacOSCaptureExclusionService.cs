@@ -47,6 +47,7 @@ public partial class MacOSCaptureExclusionService : ICaptureExclusionService
 
 #pragma warning disable CA1416
         nsWindow.SharingType = NSWindowSharingType.None;
+        nsWindow.Dispose();
 #pragma warning restore CA1416
         LogExclusionSuccess();
     }

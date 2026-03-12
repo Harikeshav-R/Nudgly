@@ -1,11 +1,10 @@
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using Nudgly.Shared.Services;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.PInvoke;
 
 namespace Nudgly.Windows.Services;
 
@@ -24,7 +23,8 @@ public partial class WindowsCaptureExclusionService : ICaptureExclusionService
     [LoggerMessage(Level = LogLevel.Information, Message = "Applying WDA_EXCLUDEFROMCAPTURE to HWND {Hwnd}")]
     private partial void LogApplyingExclusion(nint hwnd);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to apply WDA_EXCLUDEFROMCAPTURE to HWND {Hwnd}. Error code: {ErrorCode}")]
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "Failed to apply WDA_EXCLUDEFROMCAPTURE to HWND {Hwnd}. Error code: {ErrorCode}")]
     private partial void LogExclusionFailure(nint hwnd, int errorCode);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "WDA_EXCLUDEFROMCAPTURE successfully applied.")]
@@ -42,7 +42,7 @@ public partial class WindowsCaptureExclusionService : ICaptureExclusionService
         var hwnd = (HWND)handle.Value;
         LogApplyingExclusion(handle.Value);
 
-        if (!PInvoke.SetWindowDisplayAffinity(hwnd, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE))
+        if (!SetWindowDisplayAffinity(hwnd, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE))
         {
             var error = Marshal.GetLastWin32Error();
             LogExclusionFailure(handle.Value, error);
