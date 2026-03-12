@@ -1,11 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using AppKit;
 using Avalonia.Media.Imaging;
-using CoreGraphics;
-using Foundation;
 using Microsoft.Extensions.Logging;
 using Nudgly.Shared.Services;
 using ScreenCaptureKit;
