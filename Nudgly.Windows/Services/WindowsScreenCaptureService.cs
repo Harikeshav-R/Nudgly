@@ -46,7 +46,7 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
                     new PixelSize(width, height),
                     new Vector(96, 96),
                     PixelFormat.Bgra8888,
-                    AlphaFormat.Premul);
+                    AlphaFormat.Opaque);
 
                 try
                 {
@@ -127,11 +127,11 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
                                 &bmpInfo,
                                 DIB_USAGE.DIB_RGB_COLORS);
 
-                            if (lines == 0)
+                            if (lines == 0 || lines != height)
                             {
                                 var err = Marshal.GetLastWin32Error();
                                 LogWin32ApiFailed(nameof(GetDIBits), err);
-                                throw new InvalidOperationException($"GetDIBits failed with error code {err}.");
+                                throw new InvalidOperationException($"GetDIBits failed or returned incomplete data. Expected {height} lines, got {lines}. Error code {err}.");
                             }
                         }
                         finally
