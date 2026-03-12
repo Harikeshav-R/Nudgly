@@ -26,6 +26,9 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
     [LoggerMessage(Level = LogLevel.Error, Message = "Failed to capture screen using native APIs.")]
     private partial void LogScreenCaptureFailed(Exception ex);
 
+    [LoggerMessage(Level = LogLevel.Error, Message = "Win32 API '{ApiName}' failed with error code {ErrorCode}.")]
+    private partial void LogWin32ApiFailed(string apiName, int errorCode);
+
     public async Task<Bitmap?> CaptureScreenAsync()
     {
         return await Task.Run<Bitmap?>(() =>
@@ -59,13 +62,45 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
                         try
                         {
                             hdcScreen = GetDC();
+                            if (hdcScreen.Value == null)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(GetDC), err);
+                                throw new InvalidOperationException($"GetDC failed with error code {err}.");
+                            }
+
                             hdcMem = CreateCompatibleDC(hdcScreen);
+                            if (hdcMem.Value == null)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(CreateCompatibleDC), err);
+                                throw new InvalidOperationException($"CreateCompatibleDC failed with error code {err}.");
+                            }
+
                             hBitmap = CreateCompatibleBitmap(hdcScreen, width, height);
+                            if (hBitmap.Value == null)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(CreateCompatibleBitmap), err);
+                                throw new InvalidOperationException($"CreateCompatibleBitmap failed with error code {err}.");
+                            }
 
                             hOld = SelectObject(hdcMem, new HGDIOBJ(hBitmap.Value));
+                            if (hOld.Value == null)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(SelectObject), err);
+                                throw new InvalidOperationException($"SelectObject failed with error code {err}.");
+                            }
 
                             // Copy screen to memory DC
-                            BitBlt(hdcMem, 0, 0, width, height, hdcScreen, x, y, ROP_CODE.SRCCOPY);
+                            var bitBltResult = BitBlt(hdcMem, 0, 0, width, height, hdcScreen, x, y, ROP_CODE.SRCCOPY);
+                            if (!bitBltResult)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(BitBlt), err);
+                                throw new InvalidOperationException($"BitBlt failed with error code {err}.");
+                            }
 
                             LogScreenCopied();
 
@@ -83,7 +118,7 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
                             };
 
                             // Get the bits and copy directly to Avalonia's locked frame buffer
-                            GetDIBits(
+                            var lines = GetDIBits(
                                 hdcMem,
                                 hBitmap,
                                 0,
@@ -91,6 +126,13 @@ public partial class WindowsScreenCaptureService(ILogger<WindowsScreenCaptureSer
                                 (void*)fb.Address,
                                 &bmpInfo,
                                 DIB_USAGE.DIB_RGB_COLORS);
+
+                            if (lines == 0)
+                            {
+                                var err = Marshal.GetLastWin32Error();
+                                LogWin32ApiFailed(nameof(GetDIBits), err);
+                                throw new InvalidOperationException($"GetDIBits failed with error code {err}.");
+                            }
                         }
                         finally
                         {
