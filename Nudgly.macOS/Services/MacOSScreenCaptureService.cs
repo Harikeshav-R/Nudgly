@@ -84,7 +84,8 @@ public partial class MacOSScreenCaptureService : IScreenCaptureService
                 return null;
             }
 
-            using var stream = new MemoryStream(pngData.ToArray());
+            // using var stream = new MemoryStream(pngData.ToArray());
+            await using var stream = pngData.AsStream();
             var bitmap = new Bitmap(stream);
             LogCaptureCompleted();
             return bitmap;
