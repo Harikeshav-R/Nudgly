@@ -1,4 +1,11 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AppKit;
 using Avalonia.Media.Imaging;
+using CoreGraphics;
+using Foundation;
 using Microsoft.Extensions.Logging;
 using Nudgly.Shared.Services;
 using ScreenCaptureKit;
@@ -8,6 +15,7 @@ namespace Nudgly.macOS.Services;
 public partial class MacOSScreenCaptureService : IScreenCaptureService
 {
     private readonly ILogger<MacOSScreenCaptureService> _logger;
+    private static readonly NSDictionary EmptyDictionary = new();
 
     public MacOSScreenCaptureService(ILogger<MacOSScreenCaptureService> logger)
     {
@@ -59,23 +67,23 @@ public partial class MacOSScreenCaptureService : IScreenCaptureService
                 ShowsCursor = false
             };
 
-            var cgImage = await SCScreenshotManager.CaptureImageAsync(filter, config);
+            using var cgImage = await SCScreenshotManager.CaptureImageAsync(filter, config);
             if (cgImage == null)
             {
                 LogNullImageReturned();
                 return null;
             }
 
-            var nsImage = new NSImage(cgImage, new CGSize(cgImage.Width, cgImage.Height));
-            var tiffData = nsImage.AsTiff();
+            using var nsImage = new NSImage(cgImage, new CGSize(cgImage.Width, cgImage.Height));
+            using var tiffData = nsImage.AsTiff();
             if (tiffData == null)
             {
                 LogTiffConversionFailed();
                 return null;
             }
 
-            var bitmapRep = new NSBitmapImageRep(tiffData);
-            var pngData = bitmapRep.RepresentationUsingTypeProperties(NSBitmapImageFileType.Png, new NSDictionary());
+            using var bitmapRep = new NSBitmapImageRep(tiffData);
+            using var pngData = bitmapRep.RepresentationUsingTypeProperties(NSBitmapImageFileType.Png, EmptyDictionary);
 
             if (pngData == null)
             {
