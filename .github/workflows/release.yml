@@ -35,6 +35,7 @@ jobs:
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
           dotnet workload restore Nudgly.macOS/Nudgly.macOS.csproj
+          brew install create-dmg
         elif [ "$RUNNER_OS" == "Windows" ]; then
           dotnet workload restore Nudgly.Windows/Nudgly.Windows.csproj
         fi
@@ -61,8 +62,18 @@ jobs:
         dotnet publish $PROJECT --configuration Release --runtime ${{ matrix.rid }} -p:PublishAot=true -p:StripSymbols=true -o ./publish
 
         if [ "$RUNNER_OS" == "macOS" ]; then
-          # Create DMG from the .app bundle (the macOS SDK places it in the bin folder regardless of the -o flag)
-          hdiutil create -volname "Nudgly" -srcfolder Nudgly.macOS/bin/Release/net10.0-macos/${{ matrix.rid }}/Nudgly.app -ov -format UDZO Nudgly-${{ matrix.rid }}.dmg
+          # Create a professional DMG with an Applications shortcut
+          # create-dmg positions the icons and sets window properties for a beautiful UX
+          create-dmg \
+            --volname "Nudgly" \
+            --window-pos 200 120 \
+            --window-size 600 300 \
+            --icon-size 100 \
+            --icon "Nudgly.app" 150 130 \
+            --hide-extension "Nudgly.app" \
+            --app-drop-link 450 130 \
+            "Nudgly-${{ matrix.rid }}.dmg" \
+            "Nudgly.macOS/bin/Release/net10.0-macos/${{ matrix.rid }}/Nudgly.app"
         else
           # On Windows, rename the binary to include the RID
           mv ./publish/Nudgly.exe ./Nudgly-${{ matrix.rid }}.exe
