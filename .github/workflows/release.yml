@@ -13,6 +13,8 @@ jobs:
         include:
           - os: windows-latest
             rid: win-x64
+          - os: windows-latest
+            rid: win-arm64
           - os: macos-26
             rid: osx-x64
           - os: macos-26
@@ -36,7 +38,13 @@ jobs:
       shell: bash
 
     - name: Restore dependencies
-      run: dotnet restore Nudgly.slnx
+      run: |
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          dotnet restore Nudgly.macOS/Nudgly.macOS.csproj
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          dotnet restore Nudgly.Windows/Nudgly.Windows.csproj
+        fi
+      shell: bash
 
     - name: Publish
       run: |
