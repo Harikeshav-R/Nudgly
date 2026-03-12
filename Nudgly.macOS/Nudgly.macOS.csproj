@@ -10,6 +10,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PublishAot>true</PublishAot>
+        <CreatePackage>false</CreatePackage>
         <InvariantGlobalization>false</InvariantGlobalization>
 
         <!-- Native AOT Optimizations -->
@@ -24,7 +25,6 @@
         <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
         <IlcOptimizationPreference>Size</IlcOptimizationPreference>
         <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-        <TrimMode>link</TrimMode>
         <!-- Avalonia-specific optimizations -->
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>

@@ -53,17 +53,20 @@ jobs:
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
           PROJECT="Nudgly.macOS/Nudgly.macOS.csproj"
-          EXTENSION=""
         elif [ "$RUNNER_OS" == "Windows" ]; then
           PROJECT="Nudgly.Windows/Nudgly.Windows.csproj"
-          EXTENSION=".exe"
         fi
 
         # Publish to a temporary directory
         dotnet publish $PROJECT --configuration Release --runtime ${{ matrix.rid }} -p:PublishAot=true -p:StripSymbols=true -o ./publish
 
-        # Move and rename the binary to include the RID
-        mv ./publish/Nudgly$EXTENSION ./Nudgly-${{ matrix.rid }}$EXTENSION
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          # Create DMG from the .app bundle (hdiutil is built-in on macOS runners)
+          hdiutil create -volname "Nudgly" -srcfolder ./publish/Nudgly.app -ov -format UDZO Nudgly-${{ matrix.rid }}.dmg
+        else
+          # On Windows, rename the binary to include the RID
+          mv ./publish/Nudgly.exe ./Nudgly-${{ matrix.rid }}.exe
+        fi
       shell: bash
 
     - name: Upload Release Asset
@@ -71,9 +74,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
-          EXTENSION=""
+          ASSET="Nudgly-${{ matrix.rid }}.dmg"
         else
-          EXTENSION=".exe"
+          ASSET="Nudgly-${{ matrix.rid }}.exe"
         fi
-        gh release upload ${{ github.event.release.tag_name }} ./Nudgly-${{ matrix.rid }}$EXTENSION --clobber
+        gh release upload ${{ github.event.release.tag_name }} ./$ASSET --clobber
       shell: bash
