@@ -7,6 +7,7 @@
         <AssemblyName>Nudgly</AssemblyName>
         <ApplicationId>com.nudgly.app</ApplicationId>
         <ApplicationTitle>Nudgly</ApplicationTitle>
+        <MacBundleName>Nudgly</MacBundleName>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PublishAot>true</PublishAot>
