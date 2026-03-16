@@ -1,14 +1,17 @@
 using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using System.Linq;
+using System.Net.Http;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nudgly.Shared.Models;
 using Nudgly.Shared.Services;
 using Nudgly.Shared.ViewModels;
 using Nudgly.Shared.Views;
+using Nudgly.Shared.Managers;
+using LiveMarkdown.Avalonia;
 
 namespace Nudgly.Shared;
 
@@ -20,24 +23,42 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
         configure(services);
+
+        // Add shared services
+        services.AddSingleton<AppSettings>();
+        services.AddSingleton<HttpClient>();
+        services.AddSingleton<ILLMProvider, OpenRouterLLMProvider>();
+        services.AddSingleton<ILLMService, LLMManagerService>();
+        services.AddSingleton<IChatManager, ChatManager>();
+        services.AddTransient<MainWindowViewModel>();
+
         Services = services.BuildServiceProvider();
     }
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+
+        // Configure LiveMarkdown
+        try
+        {
+            MarkdownRenderer.ConfigurePipeline += x => x.UseMermaid();
+            MarkdownNode.Register<MathInlineNode>();
+            MarkdownNode.Register<MathBlockNode>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error configuring LiveMarkdown: " + ex.Message);
+        }
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            // DisableAvaloniaDataAnnotationValidation();
             var mainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = Services?.GetService<MainWindowViewModel>(),
             };
 
             Avalonia.Controls.Window.WindowOpenedEvent.AddClassHandler<Avalonia.Controls.Window>(Desktop_WindowOpened);
@@ -71,19 +92,4 @@ public partial class App : Application
             disposable.Dispose();
         }
     }
-
-    /*
-    private void DisableAvaloniaDataAnnotationValidation()
-    {
-        // Get an array of plugins to remove
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-        // remove each entry found
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
-    }
-    */
 }

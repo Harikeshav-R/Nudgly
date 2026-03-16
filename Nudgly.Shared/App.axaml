@@ -4,6 +4,7 @@
              xmlns:views="using:Nudgly.Shared.Views"
              xmlns:vm="using:Nudgly.Shared.ViewModels"
              xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -15,5 +16,7 @@
 
     <Application.Styles>
         <suki:SukiTheme ThemeColor="Blue" />
+        <materialIcons:MaterialIconStyles />
+        <StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
     </Application.Styles>
 </Application>
