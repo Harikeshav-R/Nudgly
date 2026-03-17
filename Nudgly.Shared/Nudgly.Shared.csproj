@@ -19,7 +19,7 @@
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
         <PackageReference Include="SukiUI" Version="6.0.3" />
     </ItemGroup>
 </Project>
